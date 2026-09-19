@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -45,7 +46,7 @@ jobs:
         run: npx streamdeck validate release/com.smok3y97.tilemetrics.beszel.sdPlugin
 
       - name: Pack .streamDeckPlugin artifact
-        run: npx streamdeck pack release/com.smok3y97.tilemetrics.beszel.sdPlugin --output release/
+        run: npx streamdeck pack release/com.smok3y97.tilemetrics.beszel.sdPlugin --output release/ --force
 
       - name: Upload release artifact
         uses: actions/upload-artifact@v7
