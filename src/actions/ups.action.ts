@@ -4,6 +4,7 @@ import { SvgRenderer, type ThresholdState } from "../rendering/svg.renderer.js";
 import type { BeszelStatsRecord } from "../types/beszel.types.js";
 import type { ActionSettings } from "../types/settings.types.js";
 import { evaluateInvertedThreshold } from "../utils/telemetry.utils.js";
+import { extractUpsMetrics } from "../utils/ups.utils.js";
 import { BaseMetricAction } from "./base.action.js";
 
 @action({ UUID: "com.smok3y97.tilemetrics.beszel.ups" })
@@ -25,59 +26,35 @@ export class UpsAction extends BaseMetricAction {
 			}
 
 			const subMetric = settings.subMetric ?? "Battery %";
-			const stats = latest.stats;
-
-			// Extract battery percentage from stats.bat [pct, state], stats.bats, or legacy stats.ups
-			let hasBattery = false;
-			let charge = 100;
-			let stateStr = "OL";
-
-			if (stats.bat && stats.bat.length > 0) {
-				hasBattery = true;
-				charge = Math.round(stats.bat[0] ?? 100);
-				const rawState = stats.bat[1];
-				stateStr = typeof rawState === "string" ? rawState : rawState === 1 ? "Charging" : "Discharging";
-			} else if (stats.bats && Object.keys(stats.bats).length > 0) {
-				hasBattery = true;
-				charge = Math.round(Object.values(stats.bats)[0] ?? 100);
-			} else if (stats.ups) {
-				hasBattery = true;
-				charge = Math.round(stats.ups.pct ?? 100);
-				stateStr = stats.ups.status ?? "OL";
-			}
+			const ups = extractUpsMetrics(latest.stats);
 
 			let displayValue = "--";
 			let footerText = "UPS";
 			let historyPoints: number[] = [];
 			let threshold: ThresholdState = "normal";
 
-			if (!hasBattery) {
+			if (!ups.hasBattery) {
 				displayValue = "N/A";
 				footerText = "No Battery";
 			} else if (subMetric === "Status") {
-				displayValue = stateStr;
-				footerText = stats.ups?.runtime ? `${stats.ups.runtime}m left` : "Power Mode";
+				displayValue = ups.stateStr;
+				footerText = ups.runtimeMinutes ? `${ups.runtimeMinutes}m left` : "Power Mode";
 				if (
-					!stateStr.includes("OL") &&
-					!stateStr.toLowerCase().includes("online") &&
-					!stateStr.includes("Charging")
+					!ups.stateStr.includes("OL") &&
+					!ups.stateStr.toLowerCase().includes("online") &&
+					!ups.stateStr.includes("Charging")
 				) {
 					threshold = "warning";
 				}
 			} else {
 				// Battery Capacity % (Inverted thresholds: low battery is critical)
-				displayValue = `${charge}%`;
+				displayValue = `${ups.chargePct}%`;
 				footerText = "Battery";
-				historyPoints = history.map((h) => {
-					const s = h.stats;
-					if (s.bat && s.bat.length > 0) return Math.round(s.bat[0] ?? 100);
-					if (s.bats && Object.keys(s.bats).length > 0) return Math.round(Object.values(s.bats)[0] ?? 100);
-					return Math.round(s.ups?.pct ?? 100);
-				});
+				historyPoints = history.map((h) => extractUpsMetrics(h.stats).chargePct);
 
 				const warnThresh = settings.warnThreshold ?? 40;
 				const critThresh = settings.critThreshold ?? 20;
-				threshold = evaluateInvertedThreshold(charge, warnThresh, critThresh);
+				threshold = evaluateInvertedThreshold(ups.chargePct, warnThresh, critThresh);
 			}
 
 			const svg = SvgRenderer.render({

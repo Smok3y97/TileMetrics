@@ -1,6 +1,6 @@
 {
     "name": "com.smok3y97.tilemetrics.beszel",
-    "version": "0.1.1.0",
+    "version": "0.1.2.0",
     "description": "Elgato Stream Deck telemetry display for Beszel monitoring",
     "type": "module",
     "main": "bin/plugin.js",

@@ -3,7 +3,9 @@ import streamDeck, { action, type KeyAction } from "@elgato/streamdeck";
 import { SvgRenderer, type ThresholdState } from "../rendering/svg.renderer.js";
 import type { BeszelStatsRecord } from "../types/beszel.types.js";
 import type { ActionSettings } from "../types/settings.types.js";
-import { evaluateThreshold, formatTemperature } from "../utils/telemetry.utils.js";
+import { extractCpuMetrics } from "../utils/cpu.utils.js";
+import { formatTemperature } from "../utils/temperature.utils.js";
+import { evaluateThreshold } from "../utils/telemetry.utils.js";
 import { BaseMetricAction } from "./base.action.js";
 
 @action({ UUID: "com.smok3y97.tilemetrics.beszel.cpu" })
@@ -27,7 +29,7 @@ export class CpuAction extends BaseMetricAction {
 			const subMetric = settings.subMetric ?? "Usage";
 			const warnThresh = settings.warnThreshold ?? 75;
 			const critThresh = settings.critThreshold ?? 90;
-			const stats = latest.stats;
+			const cpu = extractCpuMetrics(latest.stats);
 
 			let displayValue = "--";
 			let footerText = "CPU";
@@ -35,28 +37,27 @@ export class CpuAction extends BaseMetricAction {
 			let threshold: ThresholdState = "normal";
 
 			if (subMetric === "Load Avg") {
-				const load1m = stats.la?.[0] ?? stats.loadavg?.[0] ?? 0;
-				displayValue = load1m.toFixed(2);
+				displayValue = cpu.load1m.toFixed(2);
 				footerText = "1m Load";
-				historyPoints = history.map((h) => h.stats.la?.[0] ?? h.stats.loadavg?.[0] ?? 0);
+				historyPoints = history.map((h) => extractCpuMetrics(h.stats).load1m);
 			} else if (subMetric === "Temp") {
-				const tempValues = stats.t ? Object.values(stats.t) : [];
-				const tempC = stats.cpu_temp ?? (tempValues.length > 0 ? Math.max(...tempValues) : 0);
 				const unit = this.cache.getGlobalSettings().tempUnit ?? "C";
-				displayValue = formatTemperature(tempC, unit);
-				footerText = "Package Temp";
-				historyPoints = history.map((h) => {
-					const vals = h.stats.t ? Object.values(h.stats.t) : [];
-					return h.stats.cpu_temp ?? (vals.length > 0 ? Math.max(...vals) : 0);
-				});
-				threshold = evaluateThreshold(tempC, warnThresh, critThresh);
+				if (cpu.tempC !== undefined) {
+					displayValue = formatTemperature(cpu.tempC, unit);
+					footerText = "Package Temp";
+					threshold = evaluateThreshold(cpu.tempC, warnThresh, critThresh);
+				} else {
+					displayValue = "--";
+					footerText = "No Sensor";
+					threshold = "normal";
+				}
+				historyPoints = history.map((h) => extractCpuMetrics(h.stats).tempC ?? 0);
 			} else {
 				// Default: CPU Total Usage %
-				const usage = Math.round(stats.cpu ?? 0);
-				displayValue = `${usage}%`;
+				displayValue = `${cpu.usagePct}%`;
 				footerText = "Usage";
-				historyPoints = history.map((h) => h.stats.cpu ?? 0);
-				threshold = evaluateThreshold(usage, warnThresh, critThresh);
+				historyPoints = history.map((h) => extractCpuMetrics(h.stats).usagePct);
+				threshold = evaluateThreshold(cpu.usagePct, warnThresh, critThresh);
 			}
 
 			const svg = SvgRenderer.render({

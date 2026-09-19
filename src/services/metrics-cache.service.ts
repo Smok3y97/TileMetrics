@@ -105,7 +105,7 @@ export class MetricsCacheService extends EventEmitter {
 		const cpum = num(s?.cpum, 0);
 		const cpub = numArr(s?.cpub);
 		const cpus = numArr(s?.cpus);
-		const cpu_temp = num(s?.cpu_temp, 0);
+		const cpu_temp = typeof s?.cpu_temp === "number" && Number.isFinite(s.cpu_temp) ? s.cpu_temp : undefined;
 
 		const la: [number, number, number] =
 			Array.isArray(s?.la) && s.la.length >= 3 ? [num(s.la[0]), num(s.la[1]), num(s.la[2])] : [0, 0, 0];

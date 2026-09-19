@@ -26,7 +26,7 @@
     "Software": {
         "MinimumVersion": "7.1"
     },
-    "Version": "0.1.1.0",
+    "Version": "0.1.2.0",
     "PropertyInspectorPath": "ui/common.html",
     "Actions": [
         {

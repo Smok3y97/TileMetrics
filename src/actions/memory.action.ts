@@ -3,6 +3,7 @@ import streamDeck, { action, type KeyAction } from "@elgato/streamdeck";
 import { SvgRenderer, type ThresholdState } from "../rendering/svg.renderer.js";
 import type { BeszelStatsRecord } from "../types/beszel.types.js";
 import type { ActionSettings } from "../types/settings.types.js";
+import { extractMemoryMetrics } from "../utils/memory.utils.js";
 import { evaluateThreshold, formatGigabytes } from "../utils/telemetry.utils.js";
 import { BaseMetricAction } from "./base.action.js";
 
@@ -27,7 +28,7 @@ export class MemoryAction extends BaseMetricAction {
 			const subMetric = settings.subMetric ?? "RAM %";
 			const warnThresh = settings.warnThreshold ?? 75;
 			const critThresh = settings.critThreshold ?? 90;
-			const stats = latest.stats;
+			const mem = extractMemoryMetrics(latest.stats);
 
 			let displayValue = "--";
 			let footerText = "Memory";
@@ -35,52 +36,26 @@ export class MemoryAction extends BaseMetricAction {
 			let threshold: ThresholdState = "normal";
 
 			if (subMetric === "RAM GB") {
-				const usedGb =
-					stats.mu ??
-					(stats.mem ? (stats.mem > 1024 * 1024 ? stats.mem / (1024 * 1024 * 1024) : stats.mem) : 0);
-				displayValue = formatGigabytes(usedGb);
+				displayValue = formatGigabytes(mem.usedRamGb);
 				footerText = "Used RAM";
-				historyPoints = history.map((h) => {
-					return (
-						h.stats.mu ??
-						(h.stats.mem ? (h.stats.mem > 1024 * 1024 ? h.stats.mem / (1024 * 1024 * 1024) : h.stats.mem) : 0)
-					);
-				});
-				const memPct = stats.mp ?? stats.mem_pct ?? 0;
-				threshold = evaluateThreshold(memPct, warnThresh, critThresh);
+				historyPoints = history.map((h) => extractMemoryMetrics(h.stats).usedRamGb);
+				threshold = evaluateThreshold(mem.ramPct, warnThresh, critThresh);
 			} else if (subMetric === "Swap %") {
-				const swapPct = Math.round(
-					stats.swap_pct ?? (stats.s && stats.s > 0 ? ((stats.su ?? 0) / stats.s) * 100 : 0),
-				);
-				displayValue = `${swapPct}%`;
+				displayValue = `${mem.swapPct}%`;
 				footerText = "Swap Usage";
-				historyPoints = history.map((h) => {
-					return Math.round(
-						h.stats.swap_pct ?? (h.stats.s && h.stats.s > 0 ? ((h.stats.su ?? 0) / h.stats.s) * 100 : 0),
-					);
-				});
-				threshold = evaluateThreshold(swapPct, warnThresh, critThresh);
+				historyPoints = history.map((h) => extractMemoryMetrics(h.stats).swapPct);
+				threshold = evaluateThreshold(mem.swapPct, warnThresh, critThresh);
 			} else if (subMetric === "ZFS ARC") {
-				const arcGb = stats.mz ?? stats.zfs_arc_pct ?? 0;
-				displayValue = `${arcGb.toFixed(1)}G`;
+				displayValue = `${mem.zfsArcGb.toFixed(1)}G`;
 				footerText = "ZFS ARC";
-				historyPoints = history.map((h) => h.stats.mz ?? h.stats.zfs_arc_pct ?? 0);
-				threshold = evaluateThreshold(arcGb, warnThresh, critThresh);
+				historyPoints = history.map((h) => extractMemoryMetrics(h.stats).zfsArcGb);
+				threshold = evaluateThreshold(mem.zfsArcGb, warnThresh, critThresh);
 			} else {
 				// Default: RAM %
-				const ramPct = Math.round(
-					stats.mp ?? stats.mem_pct ?? (stats.m && stats.m > 0 ? ((stats.mu ?? 0) / stats.m) * 100 : 0),
-				);
-				displayValue = `${ramPct}%`;
+				displayValue = `${mem.ramPct}%`;
 				footerText = "RAM";
-				historyPoints = history.map((h) => {
-					return Math.round(
-						h.stats.mp ??
-							h.stats.mem_pct ??
-							(h.stats.m && h.stats.m > 0 ? ((h.stats.mu ?? 0) / h.stats.m) * 100 : 0),
-					);
-				});
-				threshold = evaluateThreshold(ramPct, warnThresh, critThresh);
+				historyPoints = history.map((h) => extractMemoryMetrics(h.stats).ramPct);
+				threshold = evaluateThreshold(mem.ramPct, warnThresh, critThresh);
 			}
 
 			const svg = SvgRenderer.render({

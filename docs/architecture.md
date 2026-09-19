@@ -162,8 +162,16 @@ tilemetrics/
 │   ├── types/                   # TypeScript schemas and data models
 │   │   ├── beszel.types.ts      # PocketBase REST payloads & Beszel metrics schemas
 │   │   └── settings.types.ts    # Global and action-specific configuration interfaces
-│   ├── utils/                   # Shared Single Point of Truth (DRY) helpers
-│   │   └── telemetry.utils.ts   # Formatters, threshold evaluators & sparkline scaling
+│   ├── utils/                   # Shared Single Point of Truth (SSOT / DRY) helpers
+│   │   ├── cpu.utils.ts         # CPU usage, load average & thermal extraction
+│   │   ├── gpu.utils.ts         # GPU load, VRAM, power & thermal extraction
+│   │   ├── memory.utils.ts      # RAM, swap & ZFS ARC cache extraction
+│   │   ├── network.utils.ts     # Network bandwidth & interface throughput extraction
+│   │   ├── storage.utils.ts     # Filesystem capacity & disk I/O extraction
+│   │   ├── telemetry.utils.ts   # Formatters, threshold evaluators & sparkline scaling
+│   │   ├── temperature.utils.ts # Multi-architecture CPU/GPU thermal sensor extraction & formatting
+│   │   ├── unit-conversion.utils.ts # Pure mathematical byte, bit & throughput converters
+│   │   └── ups.utils.ts         # Battery charge & UPS state extraction
 │   ├── index.ts                 # Package re-export entrypoint
 │   └── plugin.ts                # Main plugin initialization & action registration
 ├── ui/                          # Stream Deck Property Inspector (HTML / CSS / JS)
@@ -281,15 +289,42 @@ Located in [`src/actions/base.action.ts`](../src/actions/base.action.ts), `BaseM
 
 ---
 
-## [📐 7. Shared Telemetry Utilities & DRY Architecture (`telemetry.utils.ts`)](#top)
+## [📐 7. Shared Telemetry & Temperature Utilities (`utils/`)](#top)
 
-To adhere strictly to the **Single Point of Truth (DRY - Don't Repeat Yourself)** principle and eliminate duplicate calculations across the 6 action classes, shared mathematical and formatting logic is isolated in [`src/utils/telemetry.utils.ts`](../src/utils/telemetry.utils.ts):
+To adhere strictly to the **Single Point of Truth (DRY - Don't Repeat Yourself)** principle and eliminate duplicate calculations across the action classes, shared mathematical, formatting, and hardware sensor logic is organized by domain in `src/utils/`:
 
+### Thermal & Sensor Handling ([`src/utils/temperature.utils.ts`](../src/utils/temperature.utils.ts))
+| Function | Purpose | Consumers |
+| :--- | :--- | :--- |
+| `extractCpuTemperature(stats)` | Multi-architecture CPU thermal extraction (ARM/Pi `cpu_thermal`, Intel `coretemp`, AMD `k10temp`, ACPI, Windows). | CPU |
+| `extractGpuTemperature(stats)` | Multi-format GPU thermal sensor extraction (`stats.g`, `stats.gpu`). | GPU |
+| `celsiusToFahrenheit(celsius)` | Converts temperature in Celsius to Fahrenheit. | Temperature Utils |
+| `fahrenheitToCelsius(fahrenheit)` | Converts temperature in Fahrenheit to Celsius. | Temperature Utils |
+| `formatTemperature(tempCelsius, unit)` | Formats temperature in Celsius or converts to Fahrenheit (`°C` / `°F`). | CPU, GPU |
+
+### Unit Conversions ([`src/utils/unit-conversion.utils.ts`](../src/utils/unit-conversion.utils.ts))
+| Function / Constant | Purpose | Consumers |
+| :--- | :--- | :--- |
+| `bytesToMegabytes(bytes)` / `megabytesToBytes(mb)` | Pure conversion between raw bytes and Megabytes (MB). | Network, Storage |
+| `bytesToGigabytes(bytes)` / `gigabytesToBytes(gb)` | Pure conversion between raw bytes and Gigabytes (GB). | Memory, Storage |
+| `bytesToBits(bytes)` / `bitsToBytes(bits)` | Pure conversion between bytes and bits for bandwidth rates. | Telemetry Formatters |
+| `BYTES_PER_KB`, `BYTES_PER_MB`, `BYTES_PER_GB` | Standard binary scale byte constants ($1024^n$). | All Modules |
+
+### Domain-Specific Metric Extractors (SSOT)
+| Function | File | Purpose | Consumers |
+| :--- | :--- | :--- | :--- |
+| `extractCpuMetrics(stats)` | [`src/utils/cpu.utils.ts`](../src/utils/cpu.utils.ts) | Normalizes CPU total load %, 1m load average, and CPU thermal state. | CPU Action |
+| `extractGpuMetrics(stats)` | [`src/utils/gpu.utils.ts`](../src/utils/gpu.utils.ts) | Normalizes core load %, VRAM %, power draw (W), and thermal state. | GPU Action |
+| `extractMemoryMetrics(stats)` | [`src/utils/memory.utils.ts`](../src/utils/memory.utils.ts) | Normalizes RAM %, RAM GB, Swap %, and ZFS ARC cache GB. | Memory Action |
+| `extractNetworkMetrics(stats, iface)` | [`src/utils/network.utils.ts`](../src/utils/network.utils.ts) | Normalizes RX/TX bitrates, throughput, and active interface names. | Network Action |
+| `extractStorageMetrics(stats, mount)` | [`src/utils/storage.utils.ts`](../src/utils/storage.utils.ts) | Normalizes filesystem capacity %, disk space, and read/write I/O. | Storage Action |
+| `extractUpsMetrics(stats)` | [`src/utils/ups.utils.ts`](../src/utils/ups.utils.ts) | Normalizes battery charge %, power state string, and runtime minutes. | UPS Action |
+
+### General Telemetry & Metrics ([`src/utils/telemetry.utils.ts`](../src/utils/telemetry.utils.ts))
 | Function | Purpose | Consumers |
 | :--- | :--- | :--- |
 | `evaluateThreshold(value, warn, crit)` | Computes `"normal"`, `"warning"`, or `"critical"` states for metrics where higher is worse. | CPU, Memory, Storage, GPU |
 | `evaluateInvertedThreshold(value, warn, crit)` | Computes states for metrics where lower values represent critical states. | UPS / Battery |
-| `formatTemperature(tempCelsius, unit)` | Formats temperature in Celsius or converts to Fahrenheit (`°C` / `°F`). | CPU, GPU |
 | `formatByteThroughput(bytesPerSec)` | Scales byte throughput automatically (`B/s`, `KB/s`, `MB/s`, `GB/s`). | Storage I/O |
 | `formatNetworkBandwidth(bytesPerSec)` | Formats bitrates in standard telecom notation (`bps`, `Kbps`, `Mbps`, `Gbps`). | Network Telemetry |
 | `formatGigabytes(bytesOrGb)` | Converts raw byte values to formatted gigabytes (`15.2G`). | Memory |

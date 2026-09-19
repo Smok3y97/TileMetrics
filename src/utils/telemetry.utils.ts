@@ -1,4 +1,11 @@
 import type { ThresholdState } from "../rendering/svg.renderer.js";
+import {
+	BYTES_PER_GB,
+	BYTES_PER_KB,
+	BYTES_PER_MB,
+	bytesToBits,
+	bytesToGigabytes,
+} from "./unit-conversion.utils.js";
 
 /**
  * Single Point of Truth (DRY) for telemetry calculations, unit conversions,
@@ -42,28 +49,17 @@ export function evaluateInvertedThreshold(
 }
 
 /**
- * Formats temperature according to user preference (Celsius or Fahrenheit).
- */
-export function formatTemperature(tempCelsius: number, unit: "C" | "F" = "C"): string {
-	if (unit === "F") {
-		const tempFahrenheit = Math.round((tempCelsius * 9) / 5 + 32);
-		return `${tempFahrenheit}°F`;
-	}
-	return `${Math.round(tempCelsius)}°C`;
-}
-
-/**
  * Formats data throughput in bytes per second with automatic unit scaling (B/s, KB/s, MB/s, GB/s).
  */
 export function formatByteThroughput(bytesPerSec: number): string {
-	if (bytesPerSec >= 1024 * 1024 * 1024) {
-		return `${(bytesPerSec / (1024 * 1024 * 1024)).toFixed(1)}GB/s`;
+	if (bytesPerSec >= BYTES_PER_GB) {
+		return `${(bytesPerSec / BYTES_PER_GB).toFixed(1)}GB/s`;
 	}
-	if (bytesPerSec >= 1024 * 1024) {
-		return `${(bytesPerSec / (1024 * 1024)).toFixed(1)}MB/s`;
+	if (bytesPerSec >= BYTES_PER_MB) {
+		return `${(bytesPerSec / BYTES_PER_MB).toFixed(1)}MB/s`;
 	}
-	if (bytesPerSec >= 1024) {
-		return `${(bytesPerSec / 1024).toFixed(0)}KB/s`;
+	if (bytesPerSec >= BYTES_PER_KB) {
+		return `${(bytesPerSec / BYTES_PER_KB).toFixed(0)}KB/s`;
 	}
 	return `${bytesPerSec.toFixed(0)}B/s`;
 }
@@ -72,7 +68,7 @@ export function formatByteThroughput(bytesPerSec: number): string {
  * Formats network bandwidth in bits per second (bps, Kbps, Mbps, Gbps).
  */
 export function formatNetworkBandwidth(bytesPerSec: number): string {
-	const bitsPerSec = bytesPerSec * 8;
+	const bitsPerSec = bytesToBits(bytesPerSec);
 	if (bitsPerSec >= 1e9) {
 		return `${(bitsPerSec / 1e9).toFixed(1)}Gbps`;
 	}
@@ -90,7 +86,7 @@ export function formatNetworkBandwidth(bytesPerSec: number): string {
  */
 export function formatGigabytes(bytesOrGb: number): string {
 	// If value is greater than 1 MB, assume it's raw bytes and convert to GB
-	const gb = bytesOrGb > 1024 * 1024 ? bytesOrGb / (1024 * 1024 * 1024) : bytesOrGb;
+	const gb = bytesOrGb > BYTES_PER_MB ? bytesToGigabytes(bytesOrGb) : bytesOrGb;
 	return `${gb.toFixed(1)}G`;
 }
 
