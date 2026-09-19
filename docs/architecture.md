@@ -25,7 +25,7 @@ This document provides a comprehensive technical breakdown of the **TileMetrics 
 
 ## [🏛️ 1. High-Level System Architecture](#top)
 
-TileMetrics operates as an Elgato Stream Deck plugin running under Node.js 20 using the official `@elgato/streamdeck` SDK. It functions exclusively as a read-only client polling user-specified Beszel hubs via PocketBase REST APIs and rendering dynamic SVG key telemetry.
+TileMetrics operates as an Elgato Stream Deck plugin running under Node.js 24 using the official `@elgato/streamdeck` SDK. It functions exclusively as a read-only client polling user-specified Beszel hubs via PocketBase REST APIs and rendering dynamic SVG key telemetry.
 
 ```mermaid
 graph TD
@@ -35,7 +35,7 @@ graph TD
         SD_KEYPAD <--> SD_APP
     end
 
-    subgraph Plugin ["🎛️ TileMetrics Plugin Runtime (Node.js 20)"]
+    subgraph Plugin ["🎛️ TileMetrics Plugin Runtime (Node.js 24)"]
         REG["Plugin Entrypoint\n(src/plugin.ts)"]
 
         subgraph ActionsLayer ["Action Controllers Layer"]

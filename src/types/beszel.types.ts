@@ -1,3 +1,5 @@
+export type HostState = "ERROR" | "OFFLINE" | "ONLINE";
+
 /**
  * PocketBase and Beszel API telemetry structures.
  */

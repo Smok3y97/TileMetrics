@@ -46,6 +46,7 @@ const LOCALES = {
 		btnOpenSeparateWindow: "Open in Separate Window ↗",
 		saveNote: "Settings are saved automatically. No telemetry is collected or transmitted to external third parties.",
 		savedIndicator: "✓ Saved automatically",
+		githubRepo: "GitHub Repository",
 
 		// Server Card Fields
 		serverHeaderPrefix: "Server #",
@@ -128,6 +129,7 @@ const LOCALES = {
 		btnOpenSeparateWindow: "In separatem Fenster öffnen ↗",
 		saveNote: "Einstellungen werden automatisch gespeichert. Keine Telemetriedaten werden an Dritte übertragen.",
 		savedIndicator: "✓ Automatisch gespeichert",
+		githubRepo: "GitHub-Repository",
 
 		// Server Card Fields
 		serverHeaderPrefix: "Server #",

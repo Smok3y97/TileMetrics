@@ -75,8 +75,8 @@ export class MemoryAction extends BaseMetricAction {
 				footerText = "RAM";
 				historyPoints = history.map((h) => {
 					return Math.round(
-						stats.mp ??
-							stats.mem_pct ??
+						h.stats.mp ??
+							h.stats.mem_pct ??
 							(h.stats.m && h.stats.m > 0 ? ((h.stats.mu ?? 0) / h.stats.m) * 100 : 0),
 					);
 				});

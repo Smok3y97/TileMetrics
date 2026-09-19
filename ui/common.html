@@ -156,6 +156,15 @@
 					</button>
 				</div>
 			</div>
+
+			<!-- Persistent Footer / Helpful Links -->
+			<div class="sdpi-item" style="margin-top: 16px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; justify-content: space-between; align-items: center; font-size: 11px;">
+				<span id="pluginVersionLabel" style="opacity: 0.6;">TileMetrics</span>
+				<a href="https://github.com/Smok3y97/TileMetrics" id="linkRepo" style="color: #60a5fa; text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" title="https://github.com/Smok3y97/TileMetrics">
+					<span data-i18n="githubRepo">GitHub Repository</span>
+					<span>↗</span>
+				</a>
+			</div>
 		</div>
 
 		<script>
@@ -207,6 +216,11 @@
 					window.i18n.apply();
 				}
 				setupActionSpecificUI();
+				const version = StreamDeckClient.info?.plugin?.version;
+				const verEl = document.getElementById("pluginVersionLabel");
+				if (verEl && version) {
+					verEl.textContent = "TileMetrics v" + version;
+				}
 			});
 
 			StreamDeckClient.onDidReceiveSettings((settings) => {
@@ -571,6 +585,16 @@
 			}
 			setupActionSpecificUI();
 			updateFields();
+
+			document.getElementById("linkRepo")?.addEventListener("click", (e) => {
+				e.preventDefault();
+				const url = "https://github.com/Smok3y97/TileMetrics";
+				if (window.StreamDeckClient && typeof window.StreamDeckClient.openUrl === "function") {
+					window.StreamDeckClient.openUrl(url);
+				} else {
+					window.open(url, "_blank");
+				}
+			});
 		</script>
 	</body>
 </html>

@@ -1,14 +1,16 @@
 {
+    "$schema": "https://schemas.elgato.com/streamdeck/plugins/manifest.json",
     "Name": "TileMetrics (Beszel)",
     "Category": "TileMetrics (Beszel)",
     "CategoryIcon": "assets/category-icon",
     "Author": "Smok3y97",
+    "URL": "https://github.com/Smok3y97/TileMetrics",
     "UUID": "com.smok3y97.tilemetrics.beszel",
     "CodePath": "bin/plugin.js",
     "Description": "Real-time host and container telemetry display for Beszel monitoring",
     "Icon": "assets/plugin-icon",
     "Nodejs": {
-        "Version": "20"
+        "Version": "24"
     },
     "OS": [
         {
@@ -20,11 +22,11 @@
             "MinimumVersion": "12"
         }
     ],
-    "SDKVersion": 2,
+    "SDKVersion": 3,
     "Software": {
-        "MinimumVersion": "6.5"
+        "MinimumVersion": "7.1"
     },
-    "Version": "0.1.0.0",
+    "Version": "0.1.1.0",
     "PropertyInspectorPath": "ui/common.html",
     "Actions": [
         {

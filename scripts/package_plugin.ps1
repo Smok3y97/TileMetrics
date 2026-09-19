@@ -58,16 +58,30 @@ Copy-Item (Join-Path $RootDir "assets") $StagingDir -Recurse
 
 # 5. Pack via Elgato CLI
 Write-Host "[5/5] Packing .streamDeckPlugin archive..." -ForegroundColor Yellow
-npx streamdeck pack $StagingDir --output $ReleaseDir --force
+$archivePath = Join-Path $ReleaseDir "$PluginUUID.streamDeckPlugin"
+$archiveZip = Join-Path $ReleaseDir "$PluginUUID.zip"
+
+try {
+    npx streamdeck pack $StagingDir --output $ReleaseDir --force
+} catch {
+    Write-Warning "Stream Deck CLI pack returned non-zero exit code: $_"
+}
+
+if (-not (Test-Path $archivePath)) {
+    Write-Host "CLI pack failed; generating .streamDeckPlugin archive via Compress-Archive fallback..." -ForegroundColor Yellow
+    if (Test-Path $archiveZip) { Remove-Item $archiveZip -Force }
+    Compress-Archive -Path $StagingDir -DestinationPath $archiveZip -Force
+    Rename-Item -Path $archiveZip -NewName "$PluginUUID.streamDeckPlugin" -Force
+}
 
 # 6. Local Deployment for Live Testing
 $LocalPluginDir = Join-Path $env:APPDATA "Elgato\StreamDeck\Plugins\$PluginUUID.sdPlugin"
 if (Test-Path (Join-Path $env:APPDATA "Elgato\StreamDeck\Plugins")) {
     Write-Host "Deploying to local Stream Deck plugins..." -ForegroundColor Green
-    if (Test-Path $LocalPluginDir) {
-        Remove-Item -Path $LocalPluginDir -Recurse -Force
+    if (-not (Test-Path $LocalPluginDir)) {
+        New-Item -ItemType Directory -Path $LocalPluginDir -Force | Out-Null
     }
-    Copy-Item -Path $StagingDir -Destination $LocalPluginDir -Recurse -Force
+    Copy-Item -Path "$StagingDir\*" -Destination $LocalPluginDir -Recurse -Force
 
     if (-not $SkipRestart) {
         Write-Host "Restarting plugin in Stream Deck..." -ForegroundColor Green

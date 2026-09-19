@@ -1,8 +1,8 @@
 # TileMetrics (Beszel) Stream Deck Plugin
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Stream Deck](https://img.shields.io/badge/Stream%20Deck-v6.5%2B-red.svg)](https://www.elgato.com/stream-deck)
-[![Node.js](https://img.shields.io/badge/Node.js-v20%2B-green.svg)](https://nodejs.org/)
+[![Stream Deck](https://img.shields.io/badge/Stream%20Deck-v7.1%2B-red.svg)](https://www.elgato.com/stream-deck)
+[![Node.js](https://img.shields.io/badge/Node.js-v24%2B-green.svg)](https://nodejs.org/)
 
 A lightweight, read-only telemetry display plugin for Elgato Stream Deck that queries the [Beszel](https://beszel.dev) server monitoring hub via its PocketBase REST API. It renders real-time metrics, threshold-based status indicators, and historical sparklines directly onto Stream Deck keys.
 
@@ -138,9 +138,9 @@ For more detailed setup options, see [`docs/configuration.md`](docs/configuratio
 
 ### Requirements
 
-- Node.js 20 or newer
+- Node.js 24 or newer
 - npm 10 or newer
-- Elgato Stream Deck software 6.5 or newer
+- Elgato Stream Deck software 7.1 or newer
 - PowerShell (for Windows packaging script)
 
 ### Build Commands
@@ -157,6 +157,9 @@ npm run lint
 
 # Automatically fix linting and formatting issues
 npm run lint:fix
+
+# Synchronize 4-digit version across all manifest/package files
+npm run bump 0.1.1.0
 
 # Package into release/com.smok3y97.tilemetrics.beszel.streamDeckPlugin and deploy locally
 npm run package
@@ -192,7 +195,7 @@ For complete architectural details, class diagrams, and sequence flows, refer to
 
 TileMetrics communicates **strictly and exclusively** with the Beszel server URLs configured in your settings. It contains no external analytics, telemetry collection, or remote tracking. Credentials and tokens are stored locally by the Stream Deck application in its settings store.
 
-For complete information, see [`PRIVACY.md`](PRIVACY.md).
+For complete information, see [`PRIVACY.md`](PRIVACY.md) and [`SECURITY.md`](SECURITY.md). For publishing guidelines, see [`docs/plugin-guideline.md`](docs/plugin-guideline.md).
 
 ---
 

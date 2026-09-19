@@ -105,7 +105,8 @@ export class SvgRenderer {
 		color: string = COLOR_NORMAL,
 		isOffline: boolean = false,
 	): string {
-		if (history.length < 2 || isOffline) {
+		const validHistory = history.filter((v): v is number => typeof v === "number" && Number.isFinite(v));
+		if (validHistory.length < 2 || isOffline) {
 			return "";
 		}
 
@@ -114,19 +115,19 @@ export class SvgRenderer {
 		const boxW = 128;
 		const boxH = 56;
 
-		const min = minBound ?? Math.min(...history);
-		let max = maxBound ?? Math.max(...history);
+		const min = minBound ?? Math.min(...validHistory);
+		let max = maxBound ?? Math.max(...validHistory);
 
 		if (min === max) {
 			max = min + 1;
 		}
 
-		const stepX = boxW / (history.length - 1);
+		const stepX = boxW / (validHistory.length - 1);
 		const points: string[] = [];
 
-		for (let i = 0; i < history.length; i++) {
+		for (let i = 0; i < validHistory.length; i++) {
 			const x = boxX + i * stepX;
-			const normalized = Math.max(0, Math.min(1, (history[i] - min) / (max - min)));
+			const normalized = Math.max(0, Math.min(1, (validHistory[i] - min) / (max - min)));
 			const y = boxY + boxH - normalized * boxH;
 			points.push(`${x.toFixed(1)},${y.toFixed(1)}`);
 		}

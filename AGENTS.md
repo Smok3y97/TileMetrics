@@ -16,7 +16,7 @@ TileMetrics for Beszel is a single-root Elgato Stream Deck plugin written in Typ
                             │ SVG Base64 Data-URI (144x144)
                             │ Key Events (onKeyDown, onKeyUp)
 ┌───────────────────────────┴────────────────────────────┐
-│         TileMetrics Stream Deck Plugin (Node.js 20)    │
+│         TileMetrics Stream Deck Plugin (Node.js 24)    │
 │                                                        │
 │  ┌───────────────────────┐   ┌──────────────────────┐  │
 │  │ BaseMetricAction      │   │ SvgRenderer          │  │
@@ -162,4 +162,5 @@ npm run restart
 - **Zero-Disk In-Memory Rendering**: Render all key metrics, sparklines, and statuses in memory as Base64 Data URIs. Never write temporary SVG or PNG files to disk.
 - **Reference-Counted Polling**: All data fetching must go through `MetricsCacheService`. Actions must register on appearance and unregister on disappearance to preserve host resources.
 - **Official Elgato Code Style**: Follow `@elgato/eslint-config` and `@elgato/prettier-config`. Verify that `npm run lint` finishes with `0 errors, 0 warnings`.
+- **Node.js Runtime**: Maintain `"Version": "24"` under `"Nodejs"`, `"SDKVersion": 3`, and `"MinimumVersion": "7.1"` in `manifest.json`. Do not revert to Node.js 20.
 - **Accurate Documentation**: Maintain technical, factual descriptions in `README.md` and `docs/`. Avoid hyperbolic marketing terminology.

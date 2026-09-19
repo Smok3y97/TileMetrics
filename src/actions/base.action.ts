@@ -20,6 +20,7 @@ import type { ActionSettings } from "../types/settings.types.js";
  */
 export abstract class BaseMetricAction extends SingletonAction<ActionSettings> {
 	protected cache = MetricsCacheService.getInstance();
+	protected actionSettingsMap = new Map<string, ActionSettings>();
 	private keyPressTimers = new Map<string, number>();
 
 	constructor() {
@@ -28,7 +29,7 @@ export abstract class BaseMetricAction extends SingletonAction<ActionSettings> {
 		// Subscribe to global cache updates
 		this.cache.on(
 			"metricsUpdated",
-			(serverId: string, hostId: string, latest: BeszelStatsRecord, history: BeszelStatsRecord[]) => {
+			(serverId: string, hostId: string, latest: BeszelStatsRecord | null, history: BeszelStatsRecord[]) => {
 				void this.handleMetricsUpdated(serverId, hostId, latest, history);
 			},
 		);
@@ -94,6 +95,7 @@ export abstract class BaseMetricAction extends SingletonAction<ActionSettings> {
 	override async onWillAppear(ev: WillAppearEvent<ActionSettings>): Promise<void> {
 		const action = ev.action as KeyAction<ActionSettings>;
 		const settings = ev.payload.settings;
+		this.actionSettingsMap.set(action.id, settings);
 
 		try {
 			await this.cache.registerKey(
@@ -104,14 +106,19 @@ export abstract class BaseMetricAction extends SingletonAction<ActionSettings> {
 				settings.historyPoints ?? 20,
 			);
 
-			const latest =
-				settings.serverId && settings.hostId
-					? this.cache.getLatestStats(settings.serverId, settings.hostId)
-					: null;
-			const history =
-				settings.serverId && settings.hostId ? this.cache.getHistory(settings.serverId, settings.hostId) : [];
+			const hostState =
+				settings.serverId && settings.hostId ? this.cache.getHostState(settings.serverId, settings.hostId) : "OFFLINE";
 
-			await this.renderKey(action, settings, latest, history);
+			if (hostState === "ERROR") {
+				await this.renderError(action, "Error", "Error");
+			} else {
+				const latest =
+					settings.serverId && settings.hostId ? this.cache.getLatestStats(settings.serverId, settings.hostId) : null;
+				const history =
+					settings.serverId && settings.hostId ? this.cache.getHistory(settings.serverId, settings.hostId) : [];
+
+				await this.renderKey(action, settings, latest, history);
+			}
 		} catch (err) {
 			streamDeck.logger.error(`Error in onWillAppear for action ${action.id}: ${String(err)}`);
 			await this.renderError(action, "Error", "Error");
@@ -120,6 +127,7 @@ export abstract class BaseMetricAction extends SingletonAction<ActionSettings> {
 
 	override async onWillDisappear(ev: WillDisappearEvent<ActionSettings>): Promise<void> {
 		try {
+			this.actionSettingsMap.delete(ev.action.id);
 			this.cache.unregisterKey(ev.action.id);
 			this.keyPressTimers.delete(ev.action.id);
 		} catch (err) {
@@ -130,6 +138,7 @@ export abstract class BaseMetricAction extends SingletonAction<ActionSettings> {
 	override async onDidReceiveSettings(ev: DidReceiveSettingsEvent<ActionSettings>): Promise<void> {
 		const action = ev.action as KeyAction<ActionSettings>;
 		const settings = ev.payload.settings;
+		this.actionSettingsMap.set(action.id, settings);
 
 		try {
 			await this.cache.registerKey(
@@ -140,14 +149,19 @@ export abstract class BaseMetricAction extends SingletonAction<ActionSettings> {
 				settings.historyPoints ?? 20,
 			);
 
-			const latest =
-				settings.serverId && settings.hostId
-					? this.cache.getLatestStats(settings.serverId, settings.hostId)
-					: null;
-			const history =
-				settings.serverId && settings.hostId ? this.cache.getHistory(settings.serverId, settings.hostId) : [];
+			const hostState =
+				settings.serverId && settings.hostId ? this.cache.getHostState(settings.serverId, settings.hostId) : "OFFLINE";
 
-			await this.renderKey(action, settings, latest, history);
+			if (hostState === "ERROR") {
+				await this.renderError(action, "Error", "Error");
+			} else {
+				const latest =
+					settings.serverId && settings.hostId ? this.cache.getLatestStats(settings.serverId, settings.hostId) : null;
+				const history =
+					settings.serverId && settings.hostId ? this.cache.getHistory(settings.serverId, settings.hostId) : [];
+
+				await this.renderKey(action, settings, latest, history);
+			}
 		} catch (err) {
 			streamDeck.logger.error(`Error in onDidReceiveSettings for action ${action.id}: ${String(err)}`);
 			await this.renderError(action, "Error", "Error");
@@ -184,7 +198,7 @@ export abstract class BaseMetricAction extends SingletonAction<ActionSettings> {
 		try {
 			const payload = ev.payload as Record<string, unknown> | undefined;
 			if (payload && payload.event === "getHosts") {
-				const actionSettings = await ev.action.getSettings();
+				const actionSettings = this.actionSettingsMap.get(ev.action.id) ?? {};
 				const targetServerId = (payload.serverId as string) || actionSettings.serverId;
 				if (targetServerId) {
 					streamDeck.logger.info(`Handling getHosts for server ${targetServerId}`);
@@ -229,16 +243,22 @@ export abstract class BaseMetricAction extends SingletonAction<ActionSettings> {
 				subMetric: nextMetric,
 			};
 
+			this.actionSettingsMap.set(action.id, updatedSettings);
 			await action.setSettings(updatedSettings);
 
-			const latest =
-				settings.serverId && settings.hostId
-					? this.cache.getLatestStats(settings.serverId, settings.hostId)
-					: null;
-			const history =
-				settings.serverId && settings.hostId ? this.cache.getHistory(settings.serverId, settings.hostId) : [];
+			const hostState =
+				settings.serverId && settings.hostId ? this.cache.getHostState(settings.serverId, settings.hostId) : "OFFLINE";
 
-			await this.renderKey(action, updatedSettings, latest, history);
+			if (hostState === "ERROR") {
+				await this.renderError(action, "Error", "Error");
+			} else {
+				const latest =
+					settings.serverId && settings.hostId ? this.cache.getLatestStats(settings.serverId, settings.hostId) : null;
+				const history =
+					settings.serverId && settings.hostId ? this.cache.getHistory(settings.serverId, settings.hostId) : [];
+
+				await this.renderKey(action, updatedSettings, latest, history);
+			}
 		} catch (err) {
 			streamDeck.logger.error(`Error in onShortPress for action ${action.id}: ${String(err)}`);
 			await this.renderError(action, "Error", "Error");
@@ -267,7 +287,7 @@ export abstract class BaseMetricAction extends SingletonAction<ActionSettings> {
 	private async handleMetricsUpdated(
 		serverId: string,
 		hostId: string,
-		latest: BeszelStatsRecord,
+		latest: BeszelStatsRecord | null,
 		history: BeszelStatsRecord[],
 	): Promise<void> {
 		try {
@@ -279,10 +299,18 @@ export abstract class BaseMetricAction extends SingletonAction<ActionSettings> {
 
 				const keyAction = action as KeyAction<ActionSettings>;
 				try {
-					const settings = await keyAction.getSettings();
+					const settings = this.actionSettingsMap.get(keyAction.id);
+					if (!settings) {
+						continue;
+					}
 
 					if (settings.serverId === serverId && settings.hostId === hostId) {
-						await this.renderKey(keyAction, settings, latest, history);
+						const hostState = this.cache.getHostState(serverId, hostId);
+						if (hostState === "ERROR") {
+							await this.renderError(keyAction, "Error", "Error");
+						} else {
+							await this.renderKey(keyAction, settings, latest, history);
+						}
 					}
 				} catch (err) {
 					streamDeck.logger.error(`Error updating metric for key ${keyAction.id}: ${String(err)}`);

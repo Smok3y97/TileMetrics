@@ -21,9 +21,9 @@ This guide covers local environment setup, compilation workflows, code quality g
 
 To develop and build TileMetrics locally, ensure you have:
 
-- **Node.js**: `v20.0.0` or newer (LTS recommended).
+- **Node.js**: `v24.0.0` or newer.
 - **npm**: `v10.0.0` or newer.
-- **Elgato Stream Deck Application**: `v6.5+` (tested on `v7.0+`).
+- **Elgato Stream Deck Application**: `v7.1+`.
 - **PowerShell**: Windows PowerShell 5.1 or PowerShell 7 (required for automated packaging scripts).
 
 ---
@@ -48,17 +48,20 @@ npm run lint
 # 5. Automatically fix formatting and lint issues
 npm run lint:fix
 
-# 6. Package and deploy to local Stream Deck plugins directory
+# 6. Synchronize 4-digit version across all manifest/package files
+npm run bump 0.1.1.0
+
+# 7. Package and deploy to local Stream Deck plugins directory
 npm run package
 # or directly:
 powershell -ExecutionPolicy Bypass -File .\scripts\package_plugin.ps1
 
-# 7. Validate staged plugin directory against official Elgato SDK schema
+# 8. Validate staged plugin directory against official Elgato SDK schema
 npm run validate
 # or directly:
 npx streamdeck validate release/com.smok3y97.tilemetrics.beszel.sdPlugin
 
-# 8. Hot-restart plugin inside running Stream Deck desktop application
+# 9. Hot-restart plugin inside running Stream Deck desktop application
 npm run restart
 # or directly:
 npx streamdeck restart com.smok3y97.tilemetrics.beszel
