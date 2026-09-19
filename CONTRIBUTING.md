@@ -64,10 +64,10 @@ Feature requests and telemetry proposals are always welcome! Please use the **[F
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) v20 or newer
+- [Node.js](https://nodejs.org/) v24 or newer
 - [npm](https://www.npmjs.com/) (bundled with Node.js)
 - [Elgato Stream Deck CLI](https://docs.elgato.com/streamdeck/cli/intro): `npm install -g @elgato/cli`
-- Stream Deck Application v6.5+
+- Stream Deck Application v7.1+
 
 ### Build, Package & Validate Commands
 
@@ -117,4 +117,4 @@ In compliance with official Elgato guidelines, Property Inspector settings must 
 
 ### 6. Versioning & Package Standards
 
-We follow Elgato's 4-digit versioning: `{Major}.{Minor}.{Patch}.{Build}`. Always keep `version.json`, `manifest.json`, and `package.json` synchronized.
+Follow Elgato's 4-digit versioning: `{Major}.{Minor}.{Patch}.{Build}` (e.g. `0.1.1.0`). Always keep `version.json`, `manifest.json`, and `package.json` synchronized via `npm run bump <version>`. Never edit `package-lock.json` manually.

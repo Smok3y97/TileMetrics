@@ -35,7 +35,7 @@ The source code, build configuration, vector artwork, and documentation in this 
 │                                                        │
 │ • Writes TypeScript plugin backend code                │
 │ • Implements in-memory SVG sparkline renderer          │
-│ • Configures Rollup, ESLint, and packaging automation   │
+│ • Configures Rollup, ESLint, and packaging automation  │
 │ • Authoring technical specifications and documentation │
 └────────────────────────────────────────────────────────┘
 ```

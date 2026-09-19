@@ -90,7 +90,7 @@ graph TD
 ## [🧩 2. Core Architectural Principles](#top)
 
 1. **Single-Root Repository**:
-    - Dedicated Stream Deck plugin repository without sub-packages, monorepos, browser companions, or native C# / Win32 executables.
+    - Dedicated, self-contained Stream Deck plugin repository without sub-packages or helper background daemons.
 2. **Strict Read-Only Operations**:
     - All network traffic consists solely of HTTP `GET` requests against PocketBase collection endpoints and initial authentication queries.
     - The plugin does not perform any record mutations, administrative deletions, or configuration modifications on Beszel instances.
@@ -171,6 +171,7 @@ tilemetrics/
 │   │   └── sdpi.css             # Elgato dark-mode form controls and component styling
 │   ├── common.html              # Dynamic Property Inspector for all 6 telemetry actions
 │   ├── global-settings.html     # Multi-Server manager & global preferences configuration
+│   ├── i18n.js                  # Dynamic client-side localization loader (en.json / de.json)
 │   └── streamdeck-client.js     # WebSocket client bridge for Property Inspector events
 ├── .editorconfig                # Consistent indentation and coding style configuration
 ├── .gitattributes               # Line-ending normalizations (LF / CRLF)
@@ -344,7 +345,7 @@ sequenceDiagram
 
 ---
 
-## [⚙️ 8. Property Inspector Architecture](#top)
+## [⚙️ 9. Property Inspector Architecture](#top)
 
 The Property Inspector uses standard HTML, CSS, and vanilla JavaScript in [`ui/common.html`](../ui/common.html):
 
@@ -354,7 +355,7 @@ The Property Inspector uses standard HTML, CSS, and vanilla JavaScript in [`ui/c
 
 ---
 
-## [🔒 9. Security & Read-Only Guarantees](#top)
+## [🔒 10. Security & Read-Only Guarantees](#top)
 
 - **Network Scope**: Network traffic is strictly limited to the user-configured Beszel endpoints.
 - **Credentials Protection**: Passwords and tokens remain within the Stream Deck application's local settings storage.

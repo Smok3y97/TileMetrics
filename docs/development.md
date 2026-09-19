@@ -128,7 +128,7 @@ Automated testing and release pipelines are defined in `.github/workflows/`:
 
 - **Continuous Integration (`ci.yml`)**:
     - Triggers on every push and pull request to `main` or `master`.
-    - Runs on `ubuntu-latest` with Node.js 20.
+    - Runs on `ubuntu-latest` with Node.js 24.
     - Executes `npm ci`, `npm run lint`, `npm run build`, and `npm run validate`.
 - **Release Automation (`release.yml`)**:
     - Triggers when a Git tag matching `v*` (e.g. `v0.1.0.0`) is pushed, or via manual dispatch.

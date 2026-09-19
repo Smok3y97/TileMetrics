@@ -109,16 +109,12 @@ Each key can render a chronological trend line behind its primary value readout:
 
 Key status is indicated by the accent color applied to the sparkline, footer status dot, and value styling:
 
-```
-┌──────────────────────────────────────────────┐
-│  State     Color       Hex        Condition   │
-├──────────────────────────────────────────────┤
-│  Normal    Emerald     #10b981    < Warn      │
-│  Warning   Amber       #f59e0b    >= Warn     │
-│  Critical  Red         #ef4444    >= Crit     │
-│  Offline   Slate       #64748b    Unreachable │
-└──────────────────────────────────────────────┘
-```
+| State        | Color   | Hex Code  | Condition   |
+| :----------- | :------ | :-------- | :---------- |
+| **Normal**   | Emerald | `#10b981` | `< Warn`    |
+| **Warning**  | Amber   | `#f59e0b` | `>= Warn`   |
+| **Critical** | Red     | `#ef4444` | `>= Crit`   |
+| **Offline**  | Slate   | `#64748b` | Unreachable |
 
 ---
 
