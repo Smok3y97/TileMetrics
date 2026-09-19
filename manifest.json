@@ -1,0 +1,109 @@
+{
+    "Name": "TileMetrics (Beszel)",
+    "Category": "TileMetrics (Beszel)",
+    "CategoryIcon": "assets/category-icon",
+    "Author": "Smok3y97",
+    "UUID": "com.smok3y97.tilemetrics.beszel",
+    "CodePath": "bin/plugin.js",
+    "Description": "Real-time host and container telemetry display for Beszel monitoring",
+    "Icon": "assets/plugin-icon",
+    "Nodejs": {
+        "Version": "20"
+    },
+    "OS": [
+        {
+            "Platform": "windows",
+            "MinimumVersion": "10"
+        },
+        {
+            "Platform": "mac",
+            "MinimumVersion": "12"
+        }
+    ],
+    "SDKVersion": 2,
+    "Software": {
+        "MinimumVersion": "6.5"
+    },
+    "Version": "0.1.0.0",
+    "PropertyInspectorPath": "ui/common.html",
+    "Actions": [
+        {
+            "Name": "CPU Telemetry",
+            "UUID": "com.smok3y97.tilemetrics.beszel.cpu",
+            "Icon": "assets/actions/cpu/icon",
+            "PropertyInspectorPath": "ui/common.html",
+            "States": [
+                {
+                    "Image": "assets/actions/cpu/key",
+                    "Name": "Default"
+                }
+            ],
+            "Tooltip": "Monitors CPU usage, Load Average, and Package Temperature"
+        },
+        {
+            "Name": "Memory Telemetry",
+            "UUID": "com.smok3y97.tilemetrics.beszel.memory",
+            "Icon": "assets/actions/memory/icon",
+            "PropertyInspectorPath": "ui/common.html",
+            "States": [
+                {
+                    "Image": "assets/actions/memory/key",
+                    "Name": "Default"
+                }
+            ],
+            "Tooltip": "Monitors RAM usage, Swap, and ZFS ARC Cache"
+        },
+        {
+            "Name": "Storage Telemetry",
+            "UUID": "com.smok3y97.tilemetrics.beszel.storage",
+            "Icon": "assets/actions/storage/icon",
+            "PropertyInspectorPath": "ui/common.html",
+            "States": [
+                {
+                    "Image": "assets/actions/storage/key",
+                    "Name": "Default"
+                }
+            ],
+            "Tooltip": "Monitors disk space, read/write I/O, and pool status"
+        },
+        {
+            "Name": "Network Telemetry",
+            "UUID": "com.smok3y97.tilemetrics.beszel.network",
+            "Icon": "assets/actions/network/icon",
+            "PropertyInspectorPath": "ui/common.html",
+            "States": [
+                {
+                    "Image": "assets/actions/network/key",
+                    "Name": "Default"
+                }
+            ],
+            "Tooltip": "Monitors network throughput, RX, and TX bandwidth"
+        },
+        {
+            "Name": "GPU Telemetry",
+            "UUID": "com.smok3y97.tilemetrics.beszel.gpu",
+            "Icon": "assets/actions/gpu/icon",
+            "PropertyInspectorPath": "ui/common.html",
+            "States": [
+                {
+                    "Image": "assets/actions/gpu/key",
+                    "Name": "Default"
+                }
+            ],
+            "Tooltip": "Monitors GPU load, VRAM, power draw, and temperature"
+        },
+        {
+            "Name": "UPS / Battery",
+            "UUID": "com.smok3y97.tilemetrics.beszel.ups",
+            "Icon": "assets/actions/ups/icon",
+            "PropertyInspectorPath": "ui/common.html",
+            "States": [
+                {
+                    "Image": "assets/actions/ups/key",
+                    "Name": "Default"
+                }
+            ],
+            "Tooltip": "Monitors UPS battery capacity and power supply status"
+        }
+    ]
+}

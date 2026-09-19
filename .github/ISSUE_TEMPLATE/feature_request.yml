@@ -1,0 +1,32 @@
+name: 💡 Feature Request
+description: Suggest a new feature, metric, or improvement for TileMetrics for Beszel.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting an enhancement! Please check existing issues and discussions first to make sure your idea hasn't already been proposed.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or Motivation
+      description: Is your feature request related to a specific limitation or telemetry need?
+      placeholder: "e.g., I would like to monitor ZFS pool scrub progress on my storage key..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed Solution
+      description: Describe the functionality or visual display you would like to see added.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you considered any alternative workarounds?

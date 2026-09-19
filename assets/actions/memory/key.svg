@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 72 72" fill="none">
+  <!-- RAM DIMM PCB Outline with Locking Notches -->
+  <path d="M9 25 C9 23.5 10 22 12 22 H60 C62 22 63 23.5 63 25 V45 C63 46.5 62 48 60 48 H40 V45 H36 V48 H12 C10 48 9 46.5 9 45 Z" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round"/>
+  <!-- DRAM Memory Packages -->
+  <rect x="14" y="28" width="8" height="12" rx="1.5" stroke="#FFFFFF" stroke-width="2"/>
+  <rect x="25" y="28" width="8" height="12" rx="1.5" stroke="#FFFFFF" stroke-width="2"/>
+  <rect x="39" y="28" width="8" height="12" rx="1.5" stroke="#FFFFFF" stroke-width="2"/>
+  <rect x="50" y="28" width="8" height="12" rx="1.5" stroke="#FFFFFF" stroke-width="2"/>
+  <!-- Gold Finger Contact Pins -->
+  <path d="M14 48V54 M18 48V54 M22 48V54 M26 48V54 M30 48V54 M44 48V54 M48 48V54 M52 48V54 M56 48V54" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>TileMetrics Action Settings</title>
+		<link rel="stylesheet" href="css/sdpi.css" />
+		<script src="i18n.js"></script>
+		<script src="streamdeck-client.js"></script>
+	</head>
+	<body>
+		<div class="sdpi-wrapper" id="mainContainer">
+			<!-- VIEW 1: Action Settings -->
+			<div id="actionConfigView">
+				<div class="sdpi-heading" data-i18n="targetSystemHeading">Target System</div>
+
+				<div class="sdpi-item">
+					<div class="sdpi-item-label" data-i18n="serverLabel">Server</div>
+					<div class="sdpi-item-value">
+						<select id="serverId">
+							<option value="" data-i18n="selectServerPlaceholder">-- Select Server --</option>
+						</select>
+					</div>
+				</div>
+
+				<div id="noServersNotice" class="sdpi-note" style="display: none; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 4px; padding: 8px; margin-bottom: 8px;" data-i18n="noServersNotice">
+					No Beszel servers configured yet. Click below to add a server.
+				</div>
+
+				<div class="sdpi-item">
+					<div class="sdpi-item-label" data-i18n="hostLabel">Host / System</div>
+					<div class="sdpi-item-value">
+						<select id="hostId">
+							<option value="" data-i18n="selectHostPlaceholder">-- Select Host --</option>
+						</select>
+					</div>
+				</div>
+
+				<div id="hostErrorNotice" class="sdpi-note" style="display: none; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 4px; padding: 6px 8px; margin-bottom: 8px; color: #fca5a5; font-size: 11px;">
+				</div>
+
+				<div class="sdpi-item" style="margin-top: 6px; margin-bottom: 6px;">
+					<button class="sdpi-button accent" id="btnGoToServers" type="button" style="width: 100%;" data-i18n="btnConfigureServers">
+						⚙️ Configure Beszel Servers...
+					</button>
+				</div>
+
+				<div class="sdpi-heading" data-i18n="displayOptionsHeading">Display Options</div>
+
+				<div class="sdpi-item" id="subMetricRow">
+					<div class="sdpi-item-label" data-i18n="subMetricLabel">Sub-Metric</div>
+					<div class="sdpi-item-value">
+						<select id="subMetric">
+							<!-- Dynamically configured based on action -->
+						</select>
+					</div>
+				</div>
+
+				<div class="sdpi-item" id="interfaceOrMountRow">
+					<div class="sdpi-item-label" id="interfaceOrMountLabel" data-i18n="targetLabel">Target</div>
+					<div class="sdpi-item-value">
+						<input type="text" id="interfaceOrMount" placeholder="e.g. / or eth0 (Auto)" />
+					</div>
+				</div>
+
+				<div class="sdpi-heading" data-i18n="sparklineHeading">Sparkline & History</div>
+
+				<div class="sdpi-item">
+					<div class="sdpi-item-label" data-i18n="sparklineLabel">Sparkline</div>
+					<div class="sdpi-item-value">
+						<label class="sdpi-checkbox-label">
+							<input type="checkbox" id="enableHistory" checked />
+							<span data-i18n="showTrendGraph">Show trend graph</span>
+						</label>
+					</div>
+				</div>
+
+				<div class="sdpi-item" id="historyPointsRow">
+					<div class="sdpi-item-label" data-i18n="pointsLabel">Points</div>
+					<div class="sdpi-item-value">
+						<select id="historyPoints">
+							<option value="15" data-i18n="points15">15 data points</option>
+							<option value="20" selected data-i18n="points20Default">20 data points (Default)</option>
+							<option value="30" data-i18n="points30">30 data points</option>
+							<option value="60" data-i18n="points60">60 data points</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="sdpi-heading" data-i18n="alertThresholdsHeading">Alert Thresholds</div>
+
+				<div class="sdpi-item">
+					<div class="sdpi-item-label" data-i18n="warningLabel">Warning (Amber)</div>
+					<div class="sdpi-item-value">
+						<input type="number" id="warnThreshold" min="1" max="100" value="75" />
+						<span>%</span>
+					</div>
+				</div>
+
+				<div class="sdpi-item">
+					<div class="sdpi-item-label" data-i18n="criticalLabel">Critical (Red)</div>
+					<div class="sdpi-item-value">
+						<input type="number" id="critThreshold" min="1" max="100" value="90" />
+						<span>%</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- VIEW 2: Beszel Server Configuration (Integrated) -->
+			<div id="serverConfigView" style="display: none;">
+				<div class="sdpi-item" style="margin-bottom: 8px;">
+					<button class="sdpi-button accent" id="btnBackToAction" type="button" style="width: 100%; font-weight: bold;" data-i18n="btnBackToAction">
+						← Back to Action Settings
+					</button>
+				</div>
+
+				<div class="sdpi-heading" data-i18n="beszelHubInstancesHeading">Beszel Hub Instances</div>
+
+				<div id="serverListContainer">
+					<!-- Populated dynamically -->
+				</div>
+
+				<div class="sdpi-item" style="margin-top: 4px; margin-bottom: 6px;">
+					<button class="sdpi-button" id="btnAddServer" type="button" style="width: 100%;" data-i18n="btnAddServer">
+						+ Add Beszel Server
+					</button>
+				</div>
+
+				<div class="sdpi-heading" data-i18n="generalSettingsHeading">General Settings</div>
+
+				<div class="sdpi-item">
+					<div class="sdpi-item-label" data-i18n="pollIntervalLabel">Poll Interval</div>
+					<div class="sdpi-item-value">
+						<input type="number" id="globalInterval" min="5" max="300" step="5" value="30" />
+						<span>sec</span>
+					</div>
+				</div>
+
+				<div class="sdpi-item">
+					<div class="sdpi-item-label" data-i18n="tempUnitLabel">Temperature</div>
+					<div class="sdpi-item-value">
+						<select id="tempUnit">
+							<option value="C" data-i18n="celsiusOption">Celsius (°C)</option>
+							<option value="F" data-i18n="fahrenheitOption">Fahrenheit (°F)</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="sdpi-note" data-i18n="saveNote" style="margin-top: 6px;">
+					Settings are saved automatically. No telemetry is collected or transmitted to external third parties.
+				</div>
+
+				<div class="sdpi-item" style="margin-top: 10px;">
+					<button class="sdpi-button" id="btnOpenPopup" type="button" style="width: 100%; font-size: 11px; opacity: 0.8;" data-i18n="btnOpenSeparateWindow">
+						Open in Separate Window ↗
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			let currentSettings = {
+				serverId: "",
+				hostId: "",
+				subMetric: "",
+				interfaceOrMount: "",
+				enableHistory: true,
+				historyPoints: 20,
+				warnThreshold: 75,
+				critThreshold: 90,
+			};
+
+			let currentGlobalSettings = {
+				servers: [],
+				globalInterval: 30,
+				tempUnit: "C",
+			};
+
+			let actionUuid = "";
+			const settingsChannel = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("tilemetrics_beszel_settings") : null;
+
+			if (settingsChannel) {
+				settingsChannel.onmessage = (ev) => {
+					if (ev.data?.type === "globalSettingsChanged" && ev.data.settings) {
+						currentGlobalSettings = ev.data.settings;
+						populateServerDropdown();
+						if (document.getElementById("serverConfigView").style.display !== "none") {
+							renderServerCards();
+						}
+					}
+				};
+			}
+
+			const SUBMETRICS_BY_ACTION = {
+				"com.smok3y97.tilemetrics.beszel.cpu": ["Usage", "Load Avg", "Temp"],
+				"com.smok3y97.tilemetrics.beszel.memory": ["RAM %", "RAM GB", "Swap %", "ZFS ARC"],
+				"com.smok3y97.tilemetrics.beszel.storage": ["Capacity", "Read I/O", "Write I/O"],
+				"com.smok3y97.tilemetrics.beszel.network": ["Throughput", "Download (RX)", "Upload (TX)"],
+				"com.smok3y97.tilemetrics.beszel.gpu": ["Core Load", "VRAM", "Power", "Temp"],
+				"com.smok3y97.tilemetrics.beszel.ups": ["Battery %", "Status"],
+			};
+
+			StreamDeckClient.onConnected(() => {
+				document.getElementById("mainContainer").style.display = "flex";
+				actionUuid = StreamDeckClient.actionUuid || "";
+				if (window.i18n) {
+					window.i18n.apply();
+				}
+				setupActionSpecificUI();
+			});
+
+			StreamDeckClient.onDidReceiveSettings((settings) => {
+				if (settings) {
+					currentSettings = Object.assign(currentSettings, settings);
+					updateFields();
+					if (currentSettings.serverId) {
+						requestHosts(currentSettings.serverId);
+					}
+				}
+			});
+
+			StreamDeckClient.onDidReceiveGlobalSettings((globalSettings) => {
+				if (globalSettings) {
+					currentGlobalSettings = {
+						servers: globalSettings.servers || [],
+						globalInterval: globalSettings.globalInterval || 30,
+						tempUnit: globalSettings.tempUnit || "C",
+					};
+					populateServerDropdown();
+					if (document.getElementById("serverConfigView").style.display !== "none") {
+						renderServerCards();
+					}
+				}
+			});
+
+			StreamDeckClient.onSendToPropertyInspector((payload) => {
+				const errorNotice = document.getElementById("hostErrorNotice");
+				if (payload.event === "hostList") {
+					if (payload.error) {
+						if (errorNotice) {
+							errorNotice.textContent = "Error: " + payload.error;
+							errorNotice.style.display = "block";
+						}
+					} else {
+						if (errorNotice) {
+							errorNotice.style.display = "none";
+						}
+					}
+					if (Array.isArray(payload.hosts)) {
+						populateHostDropdown(payload.hosts);
+					}
+				}
+			});
+
+			function switchView(view) {
+				const actionView = document.getElementById("actionConfigView");
+				const serverView = document.getElementById("serverConfigView");
+
+				if (view === "servers") {
+					actionView.style.display = "none";
+					serverView.style.display = "block";
+					renderServerCards();
+				} else {
+					serverView.style.display = "none";
+					actionView.style.display = "block";
+					populateServerDropdown();
+					if (!currentSettings.serverId && currentGlobalSettings.servers.length > 0) {
+						currentSettings.serverId = currentGlobalSettings.servers[0].id;
+						saveActionSettings();
+						requestHosts(currentSettings.serverId);
+					}
+				}
+				if (window.i18n) {
+					window.i18n.apply();
+				}
+			}
+
+			document.getElementById("btnGoToServers").addEventListener("click", () => switchView("servers"));
+			document.getElementById("btnBackToAction").addEventListener("click", () => switchView("action"));
+			document.getElementById("btnOpenPopup").addEventListener("click", () => {
+				window.open("global-settings.html", "beszel_global_settings", "width=520,height=650,menubar=no,toolbar=no,location=no");
+			});
+
+			function setupActionSpecificUI() {
+				const subMetricSelect = document.getElementById("subMetric");
+				subMetricSelect.innerHTML = "";
+
+				const metrics = SUBMETRICS_BY_ACTION[actionUuid] || ["Usage"];
+				metrics.forEach((m) => {
+					const opt = document.createElement("option");
+					opt.value = m;
+					opt.textContent = window.i18n ? window.i18n.translateSubMetric(m) : m;
+					subMetricSelect.appendChild(opt);
+				});
+
+				const interfaceOrMountRow = document.getElementById("interfaceOrMountRow");
+				const label = document.getElementById("interfaceOrMountLabel");
+				const input = document.getElementById("interfaceOrMount");
+
+				if (actionUuid.includes("storage")) {
+					interfaceOrMountRow.style.display = "flex";
+					label.textContent = window.i18n ? window.i18n.t("mountpointLabel") : "Mountpoint";
+					input.placeholder = window.i18n ? window.i18n.t("storagePlaceholder") : "e.g. / or /mnt/data (Auto)";
+				} else if (actionUuid.includes("network")) {
+					interfaceOrMountRow.style.display = "flex";
+					label.textContent = window.i18n ? window.i18n.t("interfaceLabel") : "Interface";
+					input.placeholder = window.i18n ? window.i18n.t("networkPlaceholder") : "e.g. eth0 or en0 (Auto)";
+				} else {
+					interfaceOrMountRow.style.display = "none";
+				}
+			}
+
+			function populateServerDropdown() {
+				const select = document.getElementById("serverId");
+				const notice = document.getElementById("noServersNotice");
+				const prevValue = currentSettings.serverId;
+				const selectPlaceholder = window.i18n ? window.i18n.t("selectServerPlaceholder") : "-- Select Server --";
+				select.innerHTML = `<option value="">${selectPlaceholder}</option>`;
+
+				const servers = currentGlobalSettings.servers || [];
+				if (servers.length === 0) {
+					notice.style.display = "block";
+				} else {
+					notice.style.display = "none";
+				}
+
+				servers.forEach((srv) => {
+					const opt = document.createElement("option");
+					opt.value = srv.id;
+					opt.textContent = srv.name || srv.url;
+					select.appendChild(opt);
+				});
+
+				if (prevValue && servers.some((s) => s.id === prevValue)) {
+					select.value = prevValue;
+					requestHosts(prevValue);
+				} else if (servers.length > 0 && !prevValue) {
+					select.value = servers[0].id;
+					currentSettings.serverId = servers[0].id;
+					saveActionSettings();
+					requestHosts(currentSettings.serverId);
+				}
+			}
+
+			function requestHosts(serverId) {
+				if (!serverId) return;
+				const select = document.getElementById("hostId");
+				if (select && select.options.length <= 1) {
+					select.innerHTML = `<option value="">⏳ Loading hosts...</option>`;
+				}
+				StreamDeckClient.sendToPlugin({
+					event: "getHosts",
+					serverId: serverId,
+				});
+			}
+
+			function populateHostDropdown(hosts) {
+				const select = document.getElementById("hostId");
+				const prevValue = currentSettings.hostId;
+				const placeholder = window.i18n ? window.i18n.t("selectHostPlaceholder") : "-- Select Host --";
+				select.innerHTML = `<option value="">${placeholder}</option>`;
+
+				hosts.forEach((h) => {
+					const opt = document.createElement("option");
+					opt.value = h.id;
+					opt.textContent = `${h.name} (${h.status})`;
+					select.appendChild(opt);
+				});
+
+				if (prevValue && hosts.some((h) => h.id === prevValue)) {
+					select.value = prevValue;
+				} else if (hosts.length > 0 && !prevValue) {
+					select.value = hosts[0].id;
+					currentSettings.hostId = hosts[0].id;
+					saveActionSettings();
+				}
+			}
+
+			function updateFields() {
+				if (currentSettings.serverId) document.getElementById("serverId").value = currentSettings.serverId;
+				if (currentSettings.hostId) document.getElementById("hostId").value = currentSettings.hostId;
+				if (currentSettings.subMetric) document.getElementById("subMetric").value = currentSettings.subMetric;
+				document.getElementById("interfaceOrMount").value = currentSettings.interfaceOrMount || "";
+				document.getElementById("enableHistory").checked = currentSettings.enableHistory !== false;
+				document.getElementById("historyPoints").value = currentSettings.historyPoints || 20;
+				document.getElementById("warnThreshold").value = currentSettings.warnThreshold ?? 75;
+				document.getElementById("critThreshold").value = currentSettings.critThreshold ?? 90;
+
+				toggleHistoryPointsRow();
+			}
+
+			function toggleHistoryPointsRow() {
+				const enabled = document.getElementById("enableHistory").checked;
+				document.getElementById("historyPointsRow").style.display = enabled ? "flex" : "none";
+			}
+
+			function saveActionSettings() {
+				currentSettings.serverId = document.getElementById("serverId").value;
+				currentSettings.hostId = document.getElementById("hostId").value;
+				currentSettings.subMetric = document.getElementById("subMetric").value;
+				currentSettings.interfaceOrMount = document.getElementById("interfaceOrMount").value.trim();
+				currentSettings.enableHistory = document.getElementById("enableHistory").checked;
+				currentSettings.historyPoints = parseInt(document.getElementById("historyPoints").value, 10) || 20;
+				currentSettings.warnThreshold = parseInt(document.getElementById("warnThreshold").value, 10) || 75;
+				currentSettings.critThreshold = parseInt(document.getElementById("critThreshold").value, 10) || 90;
+
+				StreamDeckClient.setSettings(currentSettings);
+			}
+
+			function saveGlobalSettings() {
+				StreamDeckClient.setGlobalSettings(currentGlobalSettings);
+				if (settingsChannel) {
+					settingsChannel.postMessage({
+						type: "globalSettingsChanged",
+						settings: currentGlobalSettings,
+					});
+				}
+			}
+
+			function renderServerCards() {
+				document.getElementById("globalInterval").value = currentGlobalSettings.globalInterval || 30;
+				document.getElementById("tempUnit").value = currentGlobalSettings.tempUnit || "C";
+
+				const container = document.getElementById("serverListContainer");
+				container.innerHTML = "";
+
+				const t = (k) => (window.i18n ? window.i18n.t(k) : k);
+
+				if (currentGlobalSettings.servers.length === 0) {
+					container.innerHTML = `<div class="sdpi-note">${t("noServersNotice")}</div>`;
+					return;
+				}
+
+				currentGlobalSettings.servers.forEach((server, index) => {
+					const card = document.createElement("div");
+					card.className = "sdpi-card";
+
+					card.innerHTML = `
+					<div class="sdpi-card-header">
+						<span>${t("serverHeaderPrefix")}${index + 1}: ${escapeHtml(server.name || "Beszel Hub")}</span>
+						<button class="sdpi-button" style="color: var(--danger-color); height: 22px; padding: 0 8px;" type="button" data-action="delete" data-index="${index}">${t("btnRemove")}</button>
+					</div>
+
+					<div class="sdpi-item">
+						<div class="sdpi-item-label">${t("nameLabel")}</div>
+						<div class="sdpi-item-value">
+							<input type="text" data-field="name" data-index="${index}" value="${escapeHtml(server.name || "")}" placeholder="${t("namePlaceholder")}">
+						</div>
+					</div>
+
+					<div class="sdpi-item">
+						<div class="sdpi-item-label">${t("urlLabel")}</div>
+						<div class="sdpi-item-value">
+							<input type="url" data-field="url" data-index="${index}" value="${escapeHtml(server.url || "")}" placeholder="${t("urlPlaceholder")}">
+						</div>
+					</div>
+
+					<div class="sdpi-item">
+						<div class="sdpi-item-label">${t("usernameLabel")}</div>
+						<div class="sdpi-item-value">
+							<input type="text" data-field="username" data-index="${index}" value="${escapeHtml(server.username || "")}" placeholder="${t("usernamePlaceholder")}">
+						</div>
+					</div>
+
+					<div class="sdpi-item">
+						<div class="sdpi-item-label">${t("passwordLabel")}</div>
+						<div class="sdpi-item-value">
+							<input type="password" data-field="password" data-index="${index}" value="${escapeHtml(server.password || "")}" placeholder="${t("passwordPlaceholder")}">
+						</div>
+					</div>
+
+					<div class="sdpi-item">
+						<div class="sdpi-item-label">${t("tokenLabel")}</div>
+						<div class="sdpi-item-value">
+							<input type="password" data-field="token" data-index="${index}" value="${escapeHtml(server.token || "")}" placeholder="${t("tokenPlaceholder")}">
+						</div>
+					</div>
+
+					<div class="sdpi-item">
+						<div class="sdpi-item-label">${t("sslLabel")}</div>
+						<div class="sdpi-item-value">
+							<label class="sdpi-checkbox-label">
+								<input type="checkbox" data-field="rejectUnauthorized" data-index="${index}" ${server.rejectUnauthorized === false ? "checked" : ""}>
+								<span>${t("allowUntrustedCerts")}</span>
+							</label>
+						</div>
+					</div>
+					`;
+
+					container.appendChild(card);
+				});
+			}
+
+			document.getElementById("serverId").addEventListener("change", (e) => {
+				const serverId = e.target.value;
+				saveActionSettings();
+				if (serverId) {
+					requestHosts(serverId);
+				}
+			});
+
+			document.getElementById("hostId").addEventListener("change", saveActionSettings);
+			document.getElementById("subMetric").addEventListener("change", saveActionSettings);
+			document.getElementById("interfaceOrMount").addEventListener("input", saveActionSettings);
+			document.getElementById("enableHistory").addEventListener("change", () => {
+				toggleHistoryPointsRow();
+				saveActionSettings();
+			});
+			document.getElementById("historyPoints").addEventListener("change", saveActionSettings);
+			document.getElementById("warnThreshold").addEventListener("input", saveActionSettings);
+			document.getElementById("critThreshold").addEventListener("input", saveActionSettings);
+
+			// Server configuration event listeners
+			document.getElementById("btnAddServer").addEventListener("click", () => {
+				const id = "server_" + Date.now().toString(36);
+				currentGlobalSettings.servers.push({
+					id: id,
+					name: "Beszel Hub " + (currentGlobalSettings.servers.length + 1),
+					url: "http://localhost:8090",
+					username: "",
+					password: "",
+					token: "",
+					rejectUnauthorized: true,
+				});
+				renderServerCards();
+				saveGlobalSettings();
+			});
+
+			document.getElementById("globalInterval").addEventListener("input", (e) => {
+				currentGlobalSettings.globalInterval = parseInt(e.target.value, 10) || 30;
+				saveGlobalSettings();
+			});
+
+			document.getElementById("tempUnit").addEventListener("change", (e) => {
+				currentGlobalSettings.tempUnit = e.target.value;
+				saveGlobalSettings();
+			});
+
+			document.getElementById("serverListContainer").addEventListener("input", (e) => {
+				const index = e.target.getAttribute("data-index");
+				const field = e.target.getAttribute("data-field");
+				if (index !== null && field) {
+					const idx = parseInt(index, 10);
+					if (e.target.type === "checkbox") {
+						currentGlobalSettings.servers[idx].rejectUnauthorized = !e.target.checked;
+					} else {
+						currentGlobalSettings.servers[idx][field] = e.target.value;
+					}
+					saveGlobalSettings();
+				}
+			});
+
+			document.getElementById("serverListContainer").addEventListener("click", (e) => {
+				const btn = e.target.closest("button[data-action='delete']");
+				if (btn) {
+					const idx = parseInt(btn.getAttribute("data-index"), 10);
+					currentGlobalSettings.servers.splice(idx, 1);
+					renderServerCards();
+					saveGlobalSettings();
+				}
+			});
+
+			function escapeHtml(str) {
+				if (!str) return "";
+				return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+			}
+
+			// Initialize default fields on DOM load immediately
+			if (window.i18n) {
+				window.i18n.apply();
+			}
+			setupActionSpecificUI();
+			updateFields();
+		</script>
+	</body>
+</html>

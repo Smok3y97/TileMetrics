@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 72 72" fill="none">
+  <!-- CPU Package Substrate -->
+  <rect x="17" y="17" width="38" height="38" rx="4" stroke="#FFFFFF" stroke-width="3"/>
+  <!-- Silicon Die Heat Spreader -->
+  <rect x="26" y="26" width="20" height="20" rx="2.5" stroke="#FFFFFF" stroke-width="2.5"/>
+  <!-- Core Die Center Notch & Orientation Indicator -->
+  <circle cx="21" cy="21" r="1.5" fill="#FFFFFF"/>
+  <path d="M33 36H39 M36 33V39" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+  <!-- Connector Pins - Top -->
+  <path d="M24 8V17 M30 8V17 M36 8V17 M42 8V17 M48 8V17" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Connector Pins - Bottom -->
+  <path d="M24 55V64 M30 55V64 M36 55V64 M42 55V64 M48 55V64" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Connector Pins - Left -->
+  <path d="M8 24H17 M8 30H17 M8 36H17 M8 42H17 M8 48H17" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Connector Pins - Right -->
+  <path d="M55 24H64 M55 30H64 M55 36H64 M55 42H64 M55 48H64" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+</svg>

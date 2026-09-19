@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+  <!-- CPU Substrate Body -->
+  <rect x="4.5" y="4.5" width="11" height="11" rx="1.5" stroke="#FFFFFF" stroke-width="1.4"/>
+  <!-- Silicon Core Die -->
+  <rect x="7.5" y="7.5" width="5" height="5" rx="0.75" fill="#FFFFFF"/>
+  <!-- Top Pins -->
+  <path d="M7 2V4.5 M10 2V4.5 M13 2V4.5" stroke="#FFFFFF" stroke-width="1.3" stroke-linecap="round"/>
+  <!-- Bottom Pins -->
+  <path d="M7 15.5V18 M10 15.5V18 M13 15.5V18" stroke="#FFFFFF" stroke-width="1.3" stroke-linecap="round"/>
+  <!-- Left Pins -->
+  <path d="M2 7H4.5 M2 10H4.5 M2 13H4.5" stroke="#FFFFFF" stroke-width="1.3" stroke-linecap="round"/>
+  <!-- Right Pins -->
+  <path d="M15.5 7H18 M15.5 10H18 M15.5 13H18" stroke="#FFFFFF" stroke-width="1.3" stroke-linecap="round"/>
+</svg>

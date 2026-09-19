@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>TileMetrics Beszel Server Settings</title>
+		<link rel="stylesheet" href="css/sdpi.css" />
+		<script src="i18n.js"></script>
+		<script src="streamdeck-client.js"></script>
+	</head>
+	<body>
+		<div class="sdpi-wrapper" id="mainContainer">
+			<div class="sdpi-heading" data-i18n="beszelHubInstancesHeading">Beszel Hub Instances</div>
+
+			<div id="serverListContainer">
+				<!-- Populated dynamically -->
+			</div>
+
+			<div class="sdpi-item">
+				<button class="sdpi-button accent" id="btnAddServer" type="button" data-i18n="btnAddServer">+ Add Beszel Server</button>
+			</div>
+
+			<div class="sdpi-heading" data-i18n="generalSettingsHeading">General Settings</div>
+
+			<div class="sdpi-item">
+				<div class="sdpi-item-label" data-i18n="pollIntervalLabel">Poll Interval</div>
+				<div class="sdpi-item-value">
+					<input type="number" id="globalInterval" min="5" max="300" step="5" value="30" />
+					<span>sec</span>
+				</div>
+			</div>
+
+			<div class="sdpi-item">
+				<div class="sdpi-item-label" data-i18n="tempUnitLabel">Temperature</div>
+				<div class="sdpi-item-value">
+					<select id="tempUnit">
+						<option value="C" data-i18n="celsiusOption">Celsius (°C)</option>
+						<option value="F" data-i18n="fahrenheitOption">Fahrenheit (°F)</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="sdpi-note" data-i18n="saveNote">
+				Settings are saved automatically. No telemetry is collected or transmitted to external third parties.
+			</div>
+		</div>
+
+		<script>
+			let currentGlobalSettings = {
+				servers: [],
+				globalInterval: 30,
+				tempUnit: "C",
+			};
+
+			const settingsChannel = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("tilemetrics_beszel_settings") : null;
+
+			if (settingsChannel) {
+				settingsChannel.onmessage = (ev) => {
+					if (ev.data?.type === "globalSettingsChanged" && ev.data.settings) {
+						currentGlobalSettings = ev.data.settings;
+						renderUI();
+					}
+				};
+			}
+
+			StreamDeckClient.onConnected(() => {
+				document.getElementById("mainContainer").style.display = "flex";
+				if (window.i18n) {
+					window.i18n.apply();
+				}
+			});
+
+			StreamDeckClient.onDidReceiveGlobalSettings((settings) => {
+				if (settings) {
+					currentGlobalSettings = {
+						servers: settings.servers || [],
+						globalInterval: settings.globalInterval || 30,
+						tempUnit: settings.tempUnit || "C",
+					};
+					renderUI();
+				}
+			});
+
+			// If opened via window.opener, initialize directly from parent if available
+			if (window.opener && window.opener.currentGlobalSettings) {
+				currentGlobalSettings = Object.assign({}, window.opener.currentGlobalSettings);
+				renderUI();
+			}
+
+			function renderUI() {
+				document.getElementById("globalInterval").value = currentGlobalSettings.globalInterval || 30;
+				document.getElementById("tempUnit").value = currentGlobalSettings.tempUnit || "C";
+
+				const container = document.getElementById("serverListContainer");
+				container.innerHTML = "";
+
+				const t = (k) => (window.i18n ? window.i18n.t(k) : k);
+
+				if (currentGlobalSettings.servers.length === 0) {
+					container.innerHTML = `<div class="sdpi-note">${t("noServersNotice")}</div>`;
+					return;
+				}
+
+				currentGlobalSettings.servers.forEach((server, index) => {
+					const card = document.createElement("div");
+					card.className = "sdpi-card";
+
+					card.innerHTML = `
+					<div class="sdpi-card-header">
+						<span>${t("serverHeaderPrefix")}${index + 1}: ${escapeHtml(server.name || "Beszel Hub")}</span>
+						<button class="sdpi-button" style="color: var(--danger-color); height: 22px; padding: 0 8px;" type="button" data-action="delete" data-index="${index}">${t("btnRemove")}</button>
+					</div>
+
+					<div class="sdpi-item">
+						<div class="sdpi-item-label">${t("nameLabel")}</div>
+						<div class="sdpi-item-value">
+							<input type="text" data-field="name" data-index="${index}" value="${escapeHtml(server.name || "")}" placeholder="${t("namePlaceholder")}">
+						</div>
+					</div>
+
+					<div class="sdpi-item">
+						<div class="sdpi-item-label">${t("urlLabel")}</div>
+						<div class="sdpi-item-value">
+							<input type="url" data-field="url" data-index="${index}" value="${escapeHtml(server.url || "")}" placeholder="${t("urlPlaceholder")}">
+						</div>
+					</div>
+
+					<div class="sdpi-item">
+						<div class="sdpi-item-label">${t("usernameLabel")}</div>
+						<div class="sdpi-item-value">
+							<input type="text" data-field="username" data-index="${index}" value="${escapeHtml(server.username || "")}" placeholder="${t("usernamePlaceholder")}">
+						</div>
+					</div>
+
+					<div class="sdpi-item">
+						<div class="sdpi-item-label">${t("passwordLabel")}</div>
+						<div class="sdpi-item-value">
+							<input type="password" data-field="password" data-index="${index}" value="${escapeHtml(server.password || "")}" placeholder="${t("passwordPlaceholder")}">
+						</div>
+					</div>
+
+					<div class="sdpi-item">
+						<div class="sdpi-item-label">${t("tokenLabel")}</div>
+						<div class="sdpi-item-value">
+							<input type="password" data-field="token" data-index="${index}" value="${escapeHtml(server.token || "")}" placeholder="${t("tokenPlaceholder")}">
+						</div>
+					</div>
+
+					<div class="sdpi-item">
+						<div class="sdpi-item-label">${t("sslLabel")}</div>
+						<div class="sdpi-item-value">
+							<label class="sdpi-checkbox-label">
+								<input type="checkbox" data-field="rejectUnauthorized" data-index="${index}" ${server.rejectUnauthorized === false ? "checked" : ""}>
+								<span>${t("allowUntrustedCerts")}</span>
+							</label>
+						</div>
+					</div>
+				`;
+
+					container.appendChild(card);
+				});
+			}
+
+			function save() {
+				StreamDeckClient.setGlobalSettings(currentGlobalSettings);
+				if (settingsChannel) {
+					settingsChannel.postMessage({
+						type: "globalSettingsChanged",
+						settings: currentGlobalSettings,
+					});
+				}
+				if (window.opener && window.opener.currentGlobalSettings) {
+					window.opener.currentGlobalSettings = currentGlobalSettings;
+					if (window.opener.populateServerDropdown) {
+						window.opener.populateServerDropdown();
+					}
+				}
+			}
+
+			document.getElementById("btnAddServer").addEventListener("click", () => {
+				const id = "server_" + Date.now().toString(36);
+				currentGlobalSettings.servers.push({
+					id: id,
+					name: "Beszel Hub " + (currentGlobalSettings.servers.length + 1),
+					url: "http://localhost:8090",
+					username: "",
+					password: "",
+					token: "",
+					rejectUnauthorized: true,
+				});
+				renderUI();
+				save();
+			});
+
+			document.getElementById("globalInterval").addEventListener("input", (e) => {
+				currentGlobalSettings.globalInterval = parseInt(e.target.value, 10) || 30;
+				save();
+			});
+
+			document.getElementById("tempUnit").addEventListener("change", (e) => {
+				currentGlobalSettings.tempUnit = e.target.value;
+				save();
+			});
+
+			document.getElementById("serverListContainer").addEventListener("input", (e) => {
+				const index = e.target.getAttribute("data-index");
+				const field = e.target.getAttribute("data-field");
+				if (index !== null && field) {
+					const idx = parseInt(index, 10);
+					if (e.target.type === "checkbox") {
+						currentGlobalSettings.servers[idx].rejectUnauthorized = !e.target.checked;
+					} else {
+						currentGlobalSettings.servers[idx][field] = e.target.value;
+					}
+					save();
+				}
+			});
+
+			document.getElementById("serverListContainer").addEventListener("click", (e) => {
+				const btn = e.target.closest("button[data-action='delete']");
+				if (btn) {
+					const idx = parseInt(btn.getAttribute("data-index"), 10);
+					currentGlobalSettings.servers.splice(idx, 1);
+					renderUI();
+					save();
+				}
+			});
+
+			function escapeHtml(str) {
+				if (!str) return "";
+				return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+			}
+
+			if (window.i18n) {
+				window.i18n.apply();
+			}
+			renderUI();
+		</script>
+	</body>
+</html>

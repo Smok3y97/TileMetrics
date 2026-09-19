@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths-ignore:
+      - "docs/**"
+      - "*.md"
+      - ".github/ISSUE_TEMPLATE/**"
+      - ".github/pull_request_template.md"
+      - "LICENSE"
+  pull_request:
+    branches:
+      - main
+      - master
+    paths-ignore:
+      - "docs/**"
+      - "*.md"
+      - ".github/ISSUE_TEMPLATE/**"
+      - ".github/pull_request_template.md"
+      - "LICENSE"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-validate:
+    name: Lint, Build & Validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v7
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint and formatting check
+        run: npm run lint
+
+      - name: Compile TypeScript and bundle
+        run: npm run build
+
+      - name: Stage plugin bundle for validation
+        run: |
+          mkdir -p release/com.smok3y97.tilemetrics.beszel.sdPlugin
+          cp manifest.json release/com.smok3y97.tilemetrics.beszel.sdPlugin/
+          [ -f en.json ] && cp en.json release/com.smok3y97.tilemetrics.beszel.sdPlugin/ || true
+          [ -f de.json ] && cp de.json release/com.smok3y97.tilemetrics.beszel.sdPlugin/ || true
+          cp -r bin release/com.smok3y97.tilemetrics.beszel.sdPlugin/
+          cp -r ui release/com.smok3y97.tilemetrics.beszel.sdPlugin/
+          cp -r assets release/com.smok3y97.tilemetrics.beszel.sdPlugin/
+
+      - name: Validate Stream Deck plugin
+        run: npx streamdeck validate release/com.smok3y97.tilemetrics.beszel.sdPlugin
+
+      - name: Upload staged plugin artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: com.smok3y97.tilemetrics.beszel.sdPlugin
+          path: release/com.smok3y97.tilemetrics.beszel.sdPlugin/
+          retention-days: 14

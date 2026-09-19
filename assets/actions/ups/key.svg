@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 72 72" fill="none">
+  <!-- Battery Positive Terminal -->
+  <rect x="28" y="9" width="16" height="7" rx="2.5" fill="#FFFFFF"/>
+  <!-- Battery Cell Enclosure -->
+  <rect x="18" y="16" width="36" height="47" rx="6" stroke="#FFFFFF" stroke-width="3.5"/>
+  <!-- Fast Charge / Telemetry Lightning Bolt -->
+  <path d="M38 23L25 38H35L31 54L47 36H36L39 23H38Z" fill="#FFFFFF"/>
+  <!-- Charge Level Status Dots -->
+  <circle cx="26" cy="57" r="1.8" fill="#FFFFFF"/>
+  <circle cx="36" cy="57" r="1.8" fill="#FFFFFF"/>
+  <circle cx="46" cy="57" r="1.8" fill="#FFFFFF"/>
+</svg>

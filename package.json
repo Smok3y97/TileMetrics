@@ -1,0 +1,52 @@
+{
+    "name": "com.smok3y97.tilemetrics.beszel",
+    "version": "0.1.0.0",
+    "description": "Elgato Stream Deck telemetry display for Beszel monitoring",
+    "type": "module",
+    "main": "bin/plugin.js",
+    "scripts": {
+        "build": "rollup -c",
+        "watch": "rollup -c -w",
+        "lint": "tsc --noEmit && eslint . --max-warnings 0",
+        "lint:fix": "eslint . --fix && prettier . --write",
+        "format": "prettier . --write",
+        "validate": "streamdeck validate release/com.smok3y97.tilemetrics.beszel.sdPlugin",
+        "package": "powershell -ExecutionPolicy Bypass -File ./scripts/package_plugin.ps1",
+        "restart": "streamdeck restart com.smok3y97.tilemetrics.beszel",
+        "assets": "powershell -ExecutionPolicy Bypass -File ./scripts/generate_assets.ps1"
+    },
+    "prettier": "@elgato/prettier-config",
+    "keywords": [
+        "streamdeck-plugin",
+        "elgato",
+        "beszel",
+        "monitoring",
+        "telemetry"
+    ],
+    "author": "Smok3y97",
+    "license": "MIT",
+    "dependencies": {
+        "@elgato/streamdeck": "^2.1.2",
+        "pocketbase": "^0.28.1"
+    },
+    "devDependencies": {
+        "@elgato/cli": "^1.9.0",
+        "@elgato/eslint-config": "^0.3.2",
+        "@elgato/prettier-config": "^0.3.3",
+        "@rollup/plugin-commonjs": "^29.0.3",
+        "@rollup/plugin-json": "^6.1.0",
+        "@rollup/plugin-node-resolve": "^16.0.3",
+        "@rollup/plugin-terser": "^1.0.0",
+        "@rollup/plugin-typescript": "^12.3.0",
+        "@types/node": "^24.13.3",
+        "eslint": "^9.26.0",
+        "globals": "^15.13.0",
+        "prettier": "^3.5.0",
+        "rollup": "^4.63.0",
+        "typescript": "~5.9.3"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Smok3y97/TileMetrics.git"
+    }
+}

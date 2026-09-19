@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+  <!-- Drive Enclosure -->
+  <rect x="4" y="2.5" width="12" height="15" rx="2" stroke="#FFFFFF" stroke-width="1.3"/>
+  <!-- Disk Platter -->
+  <circle cx="10" cy="8.5" r="4" stroke="#FFFFFF" stroke-width="1.2"/>
+  <!-- Spindle Hub -->
+  <circle cx="10" cy="8.5" r="1.2" fill="#FFFFFF"/>
+  <!-- Head Arm -->
+  <path d="M10 8.5L13 12" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round"/>
+  <!-- Status / Connector Line -->
+  <line x1="6.5" y1="15" x2="13.5" y2="15" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round"/>
+</svg>

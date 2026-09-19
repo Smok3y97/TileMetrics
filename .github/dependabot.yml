@@ -1,0 +1,35 @@
+version: 2
+updates:
+  # Stream Deck Plugin npm dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    ignore:
+      # Keep TypeScript on 5.x for Elgato SDK & Rollup compatibility
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      # Keep ESLint on 9.x for @elgato/eslint-config peer dependency compatibility
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      # Keep Node types aligned with Stream Deck Node.js 20/24 runtime
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+
+  # GitHub Actions workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    ignore:
+      # Keep actions/checkout on stable v7
+      - dependency-name: "actions/checkout"
+        update-types: ["version-update:semver-major"]
+      # Keep actions/setup-node on stable v7
+      - dependency-name: "actions/setup-node"
+        update-types: ["version-update:semver-major"]
+      # Keep actions/upload-artifact on stable v7
+      - dependency-name: "actions/upload-artifact"
+        update-types: ["version-update:semver-major"]

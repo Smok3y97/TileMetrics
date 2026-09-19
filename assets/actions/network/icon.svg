@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+  <!-- RX Down Arrow (Download Telemetry) -->
+  <path d="M6.5 4.5V15.5 M3.5 12.5L6.5 15.5L9.5 12.5" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- TX Up Arrow (Upload Telemetry) -->
+  <path d="M13.5 15.5V4.5 M10.5 7.5L13.5 4.5L16.5 7.5" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

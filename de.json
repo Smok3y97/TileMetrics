@@ -1,0 +1,39 @@
+{
+    "Name": "TileMetrics (Beszel)",
+    "Category": "TileMetrics (Beszel)",
+    "Description": "Echtzeit-Host- und Container-Telemetrieanzeige für Beszel-Monitoring",
+    "com.smok3y97.tilemetrics.beszel.cpu": {
+        "Name": "CPU-Telemetrie",
+        "Tooltip": "Überwacht CPU-Auslastung, Load Average und Paket-Temperatur"
+    },
+    "com.smok3y97.tilemetrics.beszel.memory": {
+        "Name": "Arbeitsspeicher-Telemetrie",
+        "Tooltip": "Überwacht RAM-Auslastung, Swap und ZFS ARC-Cache"
+    },
+    "com.smok3y97.tilemetrics.beszel.storage": {
+        "Name": "Speicher-Telemetrie",
+        "Tooltip": "Überwacht Festplattenspeicher, Lese-/Schreib-I/O und Pool-Status"
+    },
+    "com.smok3y97.tilemetrics.beszel.network": {
+        "Name": "Netzwerk-Telemetrie",
+        "Tooltip": "Überwacht Netzwerkdurchsatz, Download- (RX) und Upload- (TX) Bandbreite"
+    },
+    "com.smok3y97.tilemetrics.beszel.gpu": {
+        "Name": "GPU-Telemetrie",
+        "Tooltip": "Überwacht GPU-Auslastung, VRAM, Stromverbrauch und Temperatur"
+    },
+    "com.smok3y97.tilemetrics.beszel.ups": {
+        "Name": "USV / Akku",
+        "Tooltip": "Überwacht USV-Akkukapazität und Stromversorgungsstatus"
+    },
+    "Localization": {
+        "Category": "TileMetrics (Beszel)",
+        "CPU Telemetry": "CPU-Telemetrie",
+        "Memory Telemetry": "Arbeitsspeicher-Telemetrie",
+        "Storage Telemetry": "Speicher-Telemetrie",
+        "Network Telemetry": "Netzwerk-Telemetrie",
+        "GPU Telemetry": "GPU-Telemetrie",
+        "UPS / Battery": "USV / Akku",
+        "Default": "Standard"
+    }
+}

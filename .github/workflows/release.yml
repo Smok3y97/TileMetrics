@@ -1,0 +1,61 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  package-and-release:
+    name: Package & Release Stream Deck Plugin
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v7
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint and formatting check
+        run: npm run lint
+
+      - name: Compile TypeScript and bundle
+        run: npm run build
+
+      - name: Stage plugin bundle
+        run: |
+          mkdir -p release/com.smok3y97.tilemetrics.beszel.sdPlugin
+          cp manifest.json release/com.smok3y97.tilemetrics.beszel.sdPlugin/
+          [ -f en.json ] && cp en.json release/com.smok3y97.tilemetrics.beszel.sdPlugin/ || true
+          [ -f de.json ] && cp de.json release/com.smok3y97.tilemetrics.beszel.sdPlugin/ || true
+          cp -r bin release/com.smok3y97.tilemetrics.beszel.sdPlugin/
+          cp -r ui release/com.smok3y97.tilemetrics.beszel.sdPlugin/
+          cp -r assets release/com.smok3y97.tilemetrics.beszel.sdPlugin/
+
+      - name: Validate Stream Deck plugin
+        run: npx streamdeck validate release/com.smok3y97.tilemetrics.beszel.sdPlugin
+
+      - name: Pack .streamDeckPlugin artifact
+        run: npx streamdeck pack release/com.smok3y97.tilemetrics.beszel.sdPlugin --output release/
+
+      - name: Upload release artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: streamdeck-release-plugin
+          path: release/*.streamDeckPlugin
+          retention-days: 30
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: release/*.streamDeckPlugin
+          generate_release_notes: true

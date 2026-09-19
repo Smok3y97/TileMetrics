@@ -1,0 +1,39 @@
+{
+    "Name": "TileMetrics (Beszel)",
+    "Category": "TileMetrics (Beszel)",
+    "Description": "Real-time host and container telemetry display for Beszel monitoring",
+    "com.smok3y97.tilemetrics.beszel.cpu": {
+        "Name": "CPU Telemetry",
+        "Tooltip": "Monitors CPU usage, Load Average, and Package Temperature"
+    },
+    "com.smok3y97.tilemetrics.beszel.memory": {
+        "Name": "Memory Telemetry",
+        "Tooltip": "Monitors RAM usage, Swap, and ZFS ARC Cache"
+    },
+    "com.smok3y97.tilemetrics.beszel.storage": {
+        "Name": "Storage Telemetry",
+        "Tooltip": "Monitors disk space, read/write I/O, and pool status"
+    },
+    "com.smok3y97.tilemetrics.beszel.network": {
+        "Name": "Network Telemetry",
+        "Tooltip": "Monitors network throughput, RX, and TX bandwidth"
+    },
+    "com.smok3y97.tilemetrics.beszel.gpu": {
+        "Name": "GPU Telemetry",
+        "Tooltip": "Monitors GPU load, VRAM, power draw, and temperature"
+    },
+    "com.smok3y97.tilemetrics.beszel.ups": {
+        "Name": "UPS / Battery",
+        "Tooltip": "Monitors UPS battery capacity and power supply status"
+    },
+    "Localization": {
+        "Category": "TileMetrics (Beszel)",
+        "CPU Telemetry": "CPU Telemetry",
+        "Memory Telemetry": "Memory Telemetry",
+        "Storage Telemetry": "Storage Telemetry",
+        "Network Telemetry": "Network Telemetry",
+        "GPU Telemetry": "GPU Telemetry",
+        "UPS / Battery": "UPS / Battery",
+        "Default": "Default"
+    }
+}
