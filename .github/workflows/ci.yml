@@ -5,22 +5,56 @@ on:
     branches:
       - main
       - master
-    paths-ignore:
-      - "docs/**"
-      - "*.md"
-      - ".github/ISSUE_TEMPLATE/**"
-      - ".github/pull_request_template.md"
-      - "LICENSE"
+    paths:
+      # Workflow definitions
+      - ".github/workflows/ci.yml"
+      # Static vector and raster assets
+      - "assets/**"
+      # Build and automation scripts
+      - "scripts/**"
+      # TypeScript source code
+      - "src/**"
+      # Property Inspector frontend components
+      - "ui/**"
+      # Localization dictionaries
+      - "de.json"
+      - "en.json"
+      # Plugin manifest & version source
+      - "manifest.json"
+      - "version.json"
+      # Build and linter configurations
+      - "eslint.config.js"
+      - "package.json"
+      - "package-lock.json"
+      - "rollup.config.mjs"
+      - "tsconfig.json"
   pull_request:
     branches:
       - main
       - master
-    paths-ignore:
-      - "docs/**"
-      - "*.md"
-      - ".github/ISSUE_TEMPLATE/**"
-      - ".github/pull_request_template.md"
-      - "LICENSE"
+    paths:
+      # Workflow definitions
+      - ".github/workflows/ci.yml"
+      # Static vector and raster assets
+      - "assets/**"
+      # Build and automation scripts
+      - "scripts/**"
+      # TypeScript source code
+      - "src/**"
+      # Property Inspector frontend components
+      - "ui/**"
+      # Localization dictionaries
+      - "de.json"
+      - "en.json"
+      # Plugin manifest & version source
+      - "manifest.json"
+      - "version.json"
+      # Build and linter configurations
+      - "eslint.config.js"
+      - "package.json"
+      - "package-lock.json"
+      - "rollup.config.mjs"
+      - "tsconfig.json"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -63,11 +97,15 @@ jobs:
           cp -r assets release/com.smok3y97.tilemetrics.beszel.sdPlugin/
 
       - name: Validate Stream Deck plugin
-        run: npx streamdeck validate release/com.smok3y97.tilemetrics.beszel.sdPlugin
+        run: npx streamdeck validate --no-update-check release/com.smok3y97.tilemetrics.beszel.sdPlugin
 
-      - name: Upload staged plugin artifact
+      - name: Pack .streamDeckPlugin artifact
+        run: npx streamdeck pack release/com.smok3y97.tilemetrics.beszel.sdPlugin --output release/ --force
+
+      - name: Upload Stream Deck Plugin Artifact
         uses: actions/upload-artifact@v7
         with:
-          name: com.smok3y97.tilemetrics.beszel.sdPlugin
-          path: release/com.smok3y97.tilemetrics.beszel.sdPlugin/
+          name: com.smok3y97.tilemetrics.beszel.streamDeckPlugin
+          path: release/*.streamDeckPlugin
+          if-no-files-found: error
           retention-days: 14

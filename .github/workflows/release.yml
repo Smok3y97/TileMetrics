@@ -7,11 +7,11 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  package-and-release:
-    name: Package & Release Stream Deck Plugin
+  validate-and-package:
+    name: Lint, Build, Validate & Package
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -43,7 +43,7 @@ jobs:
           cp -r assets release/com.smok3y97.tilemetrics.beszel.sdPlugin/
 
       - name: Validate Stream Deck plugin
-        run: npx streamdeck validate release/com.smok3y97.tilemetrics.beszel.sdPlugin
+        run: npx streamdeck validate --no-update-check release/com.smok3y97.tilemetrics.beszel.sdPlugin
 
       - name: Pack .streamDeckPlugin artifact
         run: npx streamdeck pack release/com.smok3y97.tilemetrics.beszel.sdPlugin --output release/ --force
@@ -51,12 +51,28 @@ jobs:
       - name: Upload release artifact
         uses: actions/upload-artifact@v7
         with:
-          name: streamdeck-release-plugin
+          name: release-binaries
           path: release/*.streamDeckPlugin
+          if-no-files-found: error
           retention-days: 30
 
-      - name: Create GitHub Release
+  publish-release:
+    name: Publish Release
+    needs: [validate-and-package]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download release artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: release-binaries
+          path: release
+
+      - name: Publish GitHub Release
         uses: softprops/action-gh-release@v3
         with:
           files: release/*.streamDeckPlugin
           generate_release_notes: true
+          draft: false
+          prerelease: false
