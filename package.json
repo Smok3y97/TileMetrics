@@ -28,7 +28,7 @@
     "license": "MIT",
     "dependencies": {
         "@elgato/streamdeck": "^2.1.2",
-        "undici": "^8.10.2"
+        "undici": "^8.11.0"
     },
     "devDependencies": {
         "@elgato/cli": "^1.9.0",
